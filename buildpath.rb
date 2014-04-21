@@ -1,0 +1,3 @@
+CELL_BUILD_DIRECTORY='build'
+CELL_INSTALLATION_DIRECTORY='test_installation'
+
