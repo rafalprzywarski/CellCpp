@@ -29,7 +29,7 @@ class Playground
     end
   end
   def write_file filename, content
-    File.open(@directory+ "/" + filename, "w") { |f| f.write content }
+    File.open(file_path(filename), "w") { |f| f.write content }
   end
   def collect_timestamps
     Dir.chdir(@directory) do
@@ -37,7 +37,14 @@ class Playground
     end
   end
   def file_exist? filename
-    File.exist?(@directory + "/" + filename)
+    File.exist? file_path(filename)
+  end
+  def touch filename
+    FileUtils.touch file_path(filename)
+  end
+private
+  def file_path filename
+    "#{@directory}/#{filename}"
   end
 end
 
@@ -91,4 +98,21 @@ end
 Then /^timestamps should not change$/ do
   current_file_timestamps = $playground.collect_timestamps
   current_file_timestamps.should eq($context.file_timestamps)
+end
+
+Given /^project "(.*?)" with main source "(.*?)" and sources "(.*?)"$/ do |project_name, main_source_filename, source_filenames|
+  $playground.write_file "build.cell", "project: #{project_name}"
+  $playground.write_file main_source_filename, "int main() { }\n"
+  source_filenames.split.each { |f| $playground.write_file f, "static void f() { }" }
+end
+When /^I touch "(.*?)"$/ do |filename|
+  $playground.touch filename
+end
+
+Then /^only files "(.*?)" should change$/ do |filenames|
+  current_file_timestamps = $playground.collect_timestamps
+  $context.file_timestamps.keys.each do |f|
+    current_file_timestamps[f].should_not eq($context.file_timestamps[f]), "#{f} did not change" if filenames.include? f
+    current_file_timestamps[f].should eq($context.file_timestamps[f]), "#{f} changed" unless filenames.include? f
+  end
 end
