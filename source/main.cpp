@@ -13,7 +13,7 @@ int main()
     std::string dummy, project_name;
     project >> dummy >> project_name;
 
-    auto cmd = "g++ *.cpp -o " + project_name;
+    auto cmd = "g++ -c *.cpp && g++ *.o -o " + project_name;
 
     std::system(cmd.c_str());
 

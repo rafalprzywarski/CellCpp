@@ -39,6 +39,7 @@ Feature: As a developer I want the build system to build my programs
         """
         When I run cell
         Then it should not fail
+        And object files "test1.o test2.o test_main.o" should exist
         And compiled program "demo" should print:
         """
         test1

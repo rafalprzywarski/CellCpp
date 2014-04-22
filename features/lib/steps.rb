@@ -40,3 +40,9 @@ Then /^compiled program "(.*?)" should print:$/ do |program, content|
     program_stdout.should eq(content)
   end
 end
+
+Then /^object files "(.*?)" should exist$/ do |objectFilenames|
+  objectFilenames.split.each do |objectFilename|
+      File.exist?(PLAYGROUND_DIRECTORY + "/" + objectFilename).should be_true, "#{objectFilename} does not exist"
+  end
+end
