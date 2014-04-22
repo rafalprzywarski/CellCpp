@@ -47,3 +47,10 @@ Feature: As a developer I want the build system to build my programs
         all done
 
         """
+    @wip
+    Scenario: Do not compile twice if nothing changed
+        Given default project
+        When I run cell
+        And I keep timestamps of all files
+        And I run cell
+        Then timestamps should not change
