@@ -54,7 +54,7 @@ Feature: As a developer I want the build system to build my programs
         And I keep timestamps of all files
         And I run cell
         Then timestamps should not change
-
+    @wip
     Scenario: Do recompile if original files change
         Given project "test37" with main source "main.cpp" and sources "file1.cpp file2.cpp file3.cpp"
         When I run cell
