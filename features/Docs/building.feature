@@ -54,12 +54,12 @@ Feature: As a developer I want the build system to build my programs
         And I keep timestamps of all files
         And I run cell
         Then timestamps should not change
-    @wip
+    @done
     Scenario: Do recompile if original files change
         Given project "test37" with main source "main.cpp" and sources "file1.cpp file2.cpp file3.cpp"
         When I run cell
-        And I keep timestamps of all files
         And I touch "main.cpp"
         And I touch "file2.cpp"
+        And I keep timestamps of all files
         And I run cell
         Then only files "file2.o main.o test37" should change

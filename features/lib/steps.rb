@@ -59,6 +59,7 @@ end
 
 When /^I run cell$/ do
   $context.cell_stdout, $context.cell_stderr, $context.cell_status = $playground.capture3(CELL_BUILD_CMD)
+  sleep 1
 end
 
 Then /^it should fail with "(.*?)"$/ do |message|
@@ -71,7 +72,7 @@ Given /^file "(.*?)" with:$/ do |filename, content|
 end
 
 Then /^it should not fail$/ do
-  $context.cell_status.success?.should be_true
+  $context.cell_status.success?.should be_true, $context.cell_stderr
   $context.cell_stderr.should be_empty, $context.cell_stderr
 end
 
