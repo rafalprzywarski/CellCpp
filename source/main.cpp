@@ -1,7 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <stdexcept>
-#include <functional>
+#include "config/config.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/algorithm/find_if.hpp>
@@ -10,28 +7,6 @@
 
 namespace cell
 {
-
-struct configuration
-{
-    std::string project_name;
-};
-
-struct configuration_error : std::runtime_error
-{
-    configuration_error(const std::string& message) : std::runtime_error(message) { }
-};
-
-configuration load_configuration()
-{
-    std::ifstream project("build.cell");
-    if (!project.is_open())
-        throw configuration_error("build.cell not found");
-
-    std::string dummy;
-    configuration configuration;
-    project >> dummy >> configuration.project_name;
-    return std::move(configuration);
-}
 
 std::vector<boost::filesystem::path> find_cpp_files()
 {
