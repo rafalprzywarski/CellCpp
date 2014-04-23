@@ -63,3 +63,15 @@ Feature: As a developer I want the build system to build my programs
         And I keep timestamps of all files
         And I run cell
         Then only files "file2.o main.o test37" should change
+
+    @wip
+    Scenario: Should use executable name if one is preset in the configuration
+        Given project:
+        """
+        project: some
+        executable: proj_exe
+        """
+        And main source "some.cpp"
+        When I run cell
+        Then file "proj_exe" should exist
+        And file "some" should not exist

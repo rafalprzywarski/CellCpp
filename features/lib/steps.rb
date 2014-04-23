@@ -91,6 +91,10 @@ Then /^object files "(.*?)" should exist$/ do |objectFilenames|
   end
 end
 
+Given /^project:$/ do |content|
+  $playground.write_file "build.cell", content
+end
+
 Given /^default project$/ do
   $playground.write_file "build.cell", "project: default"
   $playground.write_file "main.cpp", "int main() { }\n"
@@ -120,4 +124,16 @@ Then /^only files "(.*?)" should change$/ do |filenames|
     current_file_timestamps[f].should_not eq($context.file_timestamps[f]), "#{f} did not change" if filenames.include? f
     current_file_timestamps[f].should eq($context.file_timestamps[f]), "#{f} changed" unless filenames.include? f
   end
+end
+
+Given /^main source "(.*?)"$/ do |filename|
+  $playground.write_file filename, "int main() { }\n"
+end
+
+Then /^file "(.*?)" should exist$/ do |filename|
+  File.exist?(filename).should be_true, "#{filename} does not exist"
+end
+
+Then /^file "(.*?)" should not exist$/ do |arg1|
+  File.exist?(filename).should be_false, "#{filename} exists"
 end
