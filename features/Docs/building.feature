@@ -47,7 +47,7 @@ Feature: As a developer I want the build system to build my programs
         all done
 
         """
-    @wip
+    @done
     Scenario: Do not compile twice if nothing changed
         Given default project
         When I run cell
