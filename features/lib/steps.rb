@@ -57,9 +57,13 @@ After do
   $playground.destroy
 end
 
+def sleepForTimestampResolution
+    sleep 1
+end
+
 When /^I run cell$/ do
   $context.cell_stdout, $context.cell_stderr, $context.cell_status = $playground.capture3(CELL_BUILD_CMD)
-  sleep 1
+  sleepForTimestampResolution
 end
 
 Then /^it should fail with "(.*?)"$/ do |message|
