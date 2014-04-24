@@ -76,7 +76,7 @@ Given /^file "(.*?)" with:$/ do |filename, content|
 end
 
 Then /^it should not fail$/ do
-  $context.cell_status.success?.should be_true, $context.cell_stderr
+  $context.cell_status.success?.should be_true, "it failed with status: #{$context.cell_status}, stdout:\n#{$context.cell_stdout}\nstderr:\n#{$context.cell_stderr}"
   $context.cell_stderr.should be_empty, $context.cell_stderr
 end
 
