@@ -1,0 +1,11 @@
+* separate libraries configuration
+* test targets
+* bundles on Mac OS X
+* resource access API
+* #define dependency tracing
+* external project generation: CMake, Xcode
+* code generators plugin
+* targets: executable, package, library, framework on Mac OS X
+* configure compilers
+* cross-compilation
+
