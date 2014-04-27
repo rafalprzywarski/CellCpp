@@ -1,8 +1,8 @@
 #ifndef CELL_3323DE440C2444C396DE93DD5F7508C3_HPP
 #define CELL_3323DE440C2444C396DE93DD5F7508C3_HPP
+#include "../path.hpp"
 #include <string>
 #include <stdexcept>
-#include <boost/filesystem/path.hpp>
 #include <boost/optional.hpp>
 
 namespace cell
@@ -20,7 +20,7 @@ struct configuration_error : std::runtime_error
 };
 
 configuration load_configuration();
-configuration load_configuration(std::function<std::string(const boost::filesystem::path& )> load_file);
+configuration load_configuration(std::function<std::string(const path& )> load_file);
 
 }
 #endif

@@ -10,7 +10,7 @@ namespace cell
 
 namespace
 {
-std::string load_text_file(const boost::filesystem::path& filename)
+std::string load_text_file(const path& filename)
 {
     std::ifstream f(filename.string());
     if (!f.is_open())
@@ -80,7 +80,7 @@ configuration unpack_properties(const config::properties& properties)
 
 }
 
-configuration load_configuration(std::function<std::string(const boost::filesystem::path& )> load_file)
+configuration load_configuration(std::function<std::string(const path& )> load_file)
 {
     return unpack_properties(parse_properties(load_file("build.cell")));
 }

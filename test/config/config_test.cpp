@@ -8,9 +8,9 @@ namespace cell
 
 struct load_configuration_test : testing::Test
 {
-    std::map<boost::filesystem::path, std::string> content;
+    std::map<path, std::string> content;
 
-    std::string load_file(const boost::filesystem::path& filename)
+    std::string load_file(const path& filename)
     {
         auto it = content.find(filename);
         if (it == content.end())
