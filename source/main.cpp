@@ -4,6 +4,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <functional>
 
 namespace cell
 {
@@ -57,7 +58,15 @@ private:
     }
 };
 
-void build_targets(const configuration& configuration, const paths& cpps, std::function<void(const path& , const path& )> compile, std::function<void(const std::vector<path>& , const path& )> link)
+Target create_object_target(const path& cpp, const path& obj, std::function<void(const path& , const path& )> compile)
+{
+    Target target{obj};
+    target.set_build_command([=](const path& out){ compile(cpp, out); });
+    target.add_dependency(cpp);
+    return target;
+}
+
+void build_targets(const configuration& configuration, const paths& cpps, std::function<Target(const path& , const path& )> create_object_target, std::function<void(const std::vector<path>& , const path& )> link)
 {
     Target tgt{configuration.executable_name};
     std::vector<path> ofiles;
@@ -65,10 +74,7 @@ void build_targets(const configuration& configuration, const paths& cpps, std::f
     {
         auto ofile = replace_extension(cpp, ".o");
         ofiles.push_back(ofile);
-        Target target{ofile};
-        target.set_build_command([=](const path& out){ compile(cpp, out); });
-        target.add_dependency(cpp);
-        tgt.add_dependency(std::move(target));
+        tgt.add_dependency(create_object_target(cpp, ofile));
     }
     tgt.set_build_command([=](const path& out){ link(ofiles, out); });
     tgt.build();
@@ -91,7 +97,8 @@ void link_target(const std::vector<path>& ofiles, const path& target)
 
 void build_targets(const configuration& configuration, const paths& cpps)
 {
-    build_targets(configuration, cpps, compile_cpp, link_target);
+    using namespace std::placeholders;
+    build_targets(configuration, cpps, std::bind(create_object_target, _1, _2, compile_cpp), link_target);
 }
 
 void run()
