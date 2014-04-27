@@ -24,6 +24,11 @@ struct Target
         dependencies.push_back(std::move(dep));
     }
 
+    void set_dependencies(std::vector<Target> deps)
+    {
+        dependencies = std::move(deps);
+    }
+
     void build()
     {
         for (auto& dep : dependencies)
@@ -65,17 +70,25 @@ Target create_object_target(const path& cpp, const path& obj, fn<void(const path
     return target;
 }
 
+Target create_executable_target(const paths& objs, const path& exe, std::vector<Target> deps, fn<void(const paths& , const path& )> link)
+{
+    Target target{exe};
+    target.set_build_command([=](){ link(objs, exe); });
+    target.set_dependencies(std::move(deps));
+    return target;
+}
+
 void build_targets(const configuration& configuration, const paths& cpps, fn<Target(const path& , const path& )> create_object_target, fn<void(const std::vector<path>& , const path& )> link)
 {
-    Target tgt{configuration.executable_name};
     std::vector<path> ofiles;
+    std::vector<Target> deps;
     for (auto cpp : cpps)
     {
         auto ofile = replace_extension(cpp, ".o");
         ofiles.push_back(ofile);
-        tgt.add_dependency(create_object_target(cpp, ofile));
+        deps.push_back(create_object_target(cpp, ofile));
     }
-    tgt.set_build_command([=](){ link(ofiles, configuration.executable_name); });
+    auto tgt = create_executable_target(ofiles, configuration.executable_name, deps, link);
     tgt.build();
 }
 
