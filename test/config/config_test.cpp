@@ -62,6 +62,12 @@ TEST_P(parse_executable_name_test, should_parse_executable_name)
     EXPECT_EQ(GetParam().executable_name, configuration.executable_name);
 }
 
+TEST_F(parse_executable_name_test, should_use_project_name_if_no_exectable_name_is_specified)
+{
+    content["build.cell"] = "project: 123";
+    EXPECT_EQ("123", load_configuration().executable_name);
+}
+
 INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
     content_with_project_name{"project: abc123", "abc123"},
     content_with_project_name{"project :other", "other"},

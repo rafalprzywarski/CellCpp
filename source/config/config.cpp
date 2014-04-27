@@ -44,24 +44,40 @@ struct config_grammar : boost::spirit::qi::grammar<Iterator, config::properties(
     qi::rule<Iterator, config::properties(), ascii::space_type> grammar{*property};
 };
 
+std::map<std::string, std::string> map_properties(const config::properties& properties)
+{
+    decltype(map_properties(properties)) mapped;
+    for (auto& p : properties)
+        mapped[p.name] = p.value;
+    return mapped;
+}
+
+config::properties parse_properties(const std::string& text)
+{
+    auto first = begin(text);
+    config_grammar<std::string::const_iterator> grammar;
+    config::properties properties;
+    boost::spirit::qi::phrase_parse(first, end(text), grammar, ascii::space, properties);
+
+    return properties;
+}
+
+configuration unpack_properties(const config::properties& properties)
+{
+    auto mapped = map_properties(properties);
+    configuration configuration;
+    configuration.project_name = mapped["project"];
+    configuration.executable_name = mapped["executable"];
+    if (configuration.executable_name.empty())
+        configuration.executable_name = configuration.project_name;
+    return configuration;
+}
+
 }
 
 configuration load_configuration(std::function<std::string(const boost::filesystem::path& )> load_file)
 {
-    std::string project(load_file("build.cell"));
-
-    auto first = begin(project);
-    config_grammar<std::string::iterator> grammar;
-    config::properties properties;
-    boost::spirit::qi::phrase_parse(first, end(project), grammar, ascii::space, properties);
-    configuration configuration;
-    std::map<std::string, std::string> props;
-    for (auto& p : properties)
-        props[p.name] = p.value;
-    configuration.project_name = props["project"];
-    configuration.executable_name = props["executable"];
-
-    return std::move(configuration);
+    return unpack_properties(parse_properties(load_file("build.cell")));
 }
 
 }
