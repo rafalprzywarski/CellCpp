@@ -1,25 +1,12 @@
 #include "config/config.hpp"
+#include "find_cpp_files.hpp"
 #include <boost/filesystem.hpp>
-#include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string/join.hpp>
 
 namespace cell
 {
-
-std::vector<boost::filesystem::path> find_cpp_files()
-{
-    using namespace boost::filesystem;
-    using namespace boost::range;
-    using namespace boost::adaptors;
-    std::function<bool(const directory_entry& e)> is_cpp = [](const directory_entry& e) { return e.path().extension() == ".cpp"; };
-    std::function<std::string(const directory_entry& e)> to_string = [](const directory_entry& e) { return e.path().string(); };
-    decltype(find_cpp_files()) cpps;
-    push_back(cpps, transform(filter(make_iterator_range(directory_iterator(current_path()), directory_iterator()), is_cpp), to_string));
-    return cpps;
-}
-
 boost::filesystem::path replace_extension(boost::filesystem::path path, const boost::filesystem::path& new_ext)
 {
     return std::move(path.replace_extension(new_ext));

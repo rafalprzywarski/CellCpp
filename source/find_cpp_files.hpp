@@ -1,0 +1,12 @@
+#ifndef CELL_CA8ECE2479104F85B8454901D2B5EE23_HPP
+#define CELL_CA8ECE2479104F85B8454901D2B5EE23_HPP
+#include "path.hpp"
+
+namespace cell
+{
+
+paths find_cpp_files();
+
+}
+
+#endif // CELL_CA8ECE2479104F85B8454901D2B5EE23_HPP
