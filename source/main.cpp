@@ -8,6 +8,10 @@
 
 namespace cell
 {
+
+template <typename F>
+using fn = std::function<F>;
+
 path replace_extension(path p, const path& new_ext)
 {
     return std::move(p.replace_extension(new_ext));
@@ -25,15 +29,10 @@ struct Target
         for (auto& dep : dependencies)
             dep.build();
         if (is_out_of_date())
-            build_command(file);
+            build_command();
     }
 
-    path get_file() const
-    {
-        return file;
-    }
-
-    void set_build_command(std::function<void(const path& out)> cmd)
+    void set_build_command(fn<void()> cmd)
     {
         build_command = std::move(cmd);
     }
@@ -42,7 +41,7 @@ struct Target
 private:
     path file;
     std::vector<Target> dependencies;
-    std::function<void(const path& out)> build_command;
+    fn<void()> build_command;
 
     bool is_out_of_date() const
     {
@@ -58,15 +57,15 @@ private:
     }
 };
 
-Target create_object_target(const path& cpp, const path& obj, std::function<void(const path& , const path& )> compile)
+Target create_object_target(const path& cpp, const path& obj, fn<void(const path& , const path& )> compile)
 {
     Target target{obj};
-    target.set_build_command([=](const path& out){ compile(cpp, out); });
+    target.set_build_command([=](){ compile(cpp, obj); });
     target.add_dependency(cpp);
     return target;
 }
 
-void build_targets(const configuration& configuration, const paths& cpps, std::function<Target(const path& , const path& )> create_object_target, std::function<void(const std::vector<path>& , const path& )> link)
+void build_targets(const configuration& configuration, const paths& cpps, fn<Target(const path& , const path& )> create_object_target, fn<void(const std::vector<path>& , const path& )> link)
 {
     Target tgt{configuration.executable_name};
     std::vector<path> ofiles;
@@ -76,7 +75,7 @@ void build_targets(const configuration& configuration, const paths& cpps, std::f
         ofiles.push_back(ofile);
         tgt.add_dependency(create_object_target(cpp, ofile));
     }
-    tgt.set_build_command([=](const path& out){ link(ofiles, out); });
+    tgt.set_build_command([=](){ link(ofiles, configuration.executable_name); });
     tgt.build();
 }
 
@@ -89,7 +88,7 @@ void compile_cpp(const path& cpp, const path& ofile)
 void link_target(const std::vector<path>& ofiles, const path& target)
 {
     using namespace boost::adaptors;
-    std::function<std::string(const path& e)> to_string = [](const path& p) { return p.string(); };
+    fn<std::string(const path& e)> to_string = [](const path& p) { return p.string(); };
     auto flattened = boost::join(transform(ofiles, to_string), " ");
     auto link_cmd = "g++ " + flattened + " -o " + target.string();
     std::system(link_cmd.c_str());
