@@ -2,7 +2,7 @@
 #define CELL_3323DE440C2444C396DE93DD5F7508C3_HPP
 #include <string>
 #include <stdexcept>
-#include <fstream>
+#include <boost/filesystem/path.hpp>
 
 namespace cell
 {
@@ -18,6 +18,7 @@ struct configuration_error : std::runtime_error
 };
 
 configuration load_configuration();
+configuration load_configuration(std::function<std::string(const boost::filesystem::path& )> load_file);
 
 }
 #endif
