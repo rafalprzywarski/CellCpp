@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include <boost/filesystem/path.hpp>
+#include <boost/optional.hpp>
 
 namespace cell
 {
@@ -10,6 +11,7 @@ namespace cell
 struct configuration
 {
     std::string project_name;
+    std::string executable_name;
 };
 
 struct configuration_error : std::runtime_error
