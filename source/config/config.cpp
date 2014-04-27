@@ -62,14 +62,19 @@ config::properties parse_properties(const std::string& text)
     return properties;
 }
 
+template <typename Map>
+const typename Map::mapped_type& get_value_or(const Map& m, const typename Map::key_type& k, const typename Map::mapped_type& v)
+{
+    auto it = m.find(k);
+    return it != m.end() ? it->second : v;
+}
+
 configuration unpack_properties(const config::properties& properties)
 {
     auto mapped = map_properties(properties);
     configuration configuration;
     configuration.project_name = mapped["project"];
-    configuration.executable_name = mapped["executable"];
-    if (configuration.executable_name.empty())
-        configuration.executable_name = configuration.project_name;
+    configuration.executable_name = get_value_or(mapped, "executable", configuration.project_name);
     return configuration;
 }
 
