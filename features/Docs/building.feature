@@ -64,7 +64,7 @@ Feature: As a developer I want the build system to build my programs
         And I run cell
         Then only files "file2.o main.o test37" should change
 
-    @wip
+    @done
     Scenario: Should use executable name if one is preset in the configuration
         Given project:
         """

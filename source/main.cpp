@@ -59,7 +59,7 @@ private:
 
 void build_targets(const configuration& configuration, const paths& cpps, std::function<void(const path& , const path& )> compile, std::function<void(const std::vector<path>& , const path& )> link)
 {
-    Target tgt{configuration.project_name};
+    Target tgt{configuration.executable_name};
     std::vector<path> ofiles;
     for (auto cpp : cpps)
     {
