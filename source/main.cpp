@@ -57,11 +57,11 @@ private:
     }
 };
 
-void build_targets(const configuration& configuration, std::function<void(const path& , const path& )> compile, std::function<void(const std::vector<path>& , const path& )> link)
+void build_targets(const configuration& configuration, const paths& cpps, std::function<void(const path& , const path& )> compile, std::function<void(const std::vector<path>& , const path& )> link)
 {
     Target tgt{configuration.project_name};
     std::vector<path> ofiles;
-    for (auto cpp : find_cpp_files())
+    for (auto cpp : cpps)
     {
         auto ofile = replace_extension(cpp, ".o");
         ofiles.push_back(ofile);
@@ -89,15 +89,16 @@ void link_target(const std::vector<path>& ofiles, const path& target)
     std::system(link_cmd.c_str());
 }
 
-void build_targets(const configuration& configuration)
+void build_targets(const configuration& configuration, const paths& cpps)
 {
-    build_targets(configuration, compile_cpp, link_target);
+    build_targets(configuration, cpps, compile_cpp, link_target);
 }
 
 void run()
 {
     auto configuration = load_configuration();
-    build_targets(configuration);
+    auto cpps = find_cpp_files();
+    build_targets(configuration, cpps);
 }
 
 }
