@@ -44,6 +44,8 @@ TEST_P(parse_project_name_test, should_parse_project_name)
 }
 
 INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
-    content_with_project_name{"project: abc123", "abc123"}));
+    content_with_project_name{"project: abc123", "abc123"},
+    content_with_project_name{"project :other", "other"},
+    content_with_project_name{"project : another\n", "another"}));
 
 }
