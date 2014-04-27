@@ -131,9 +131,9 @@ Given /^main source "(.*?)"$/ do |filename|
 end
 
 Then /^file "(.*?)" should exist$/ do |filename|
-  File.exist?(filename).should be_true, "#{filename} does not exist"
+  $playground.file_exist?(filename).should be_true, "#{filename} does not exist"
 end
 
-Then /^file "(.*?)" should not exist$/ do |arg1|
-  File.exist?(filename).should be_false, "#{filename} exists"
+Then /^file "(.*?)" should not exist$/ do |filename|
+  $playground.file_exist?(filename).should be_false, "#{filename} exists"
 end
