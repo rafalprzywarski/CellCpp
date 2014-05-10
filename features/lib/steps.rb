@@ -31,6 +31,9 @@ class Playground
   def write_file filename, content
     File.open(file_path(filename), "w") { |f| f.write content }
   end
+  def read_file filename
+    File.read(file_path(filename))
+  end
   def collect_timestamps
     Dir.chdir(@directory) do
         Hash[Dir["*"].collect { |f| [ f, File.mtime(f).strftime("%Y-%m-%d %H:%M:%S.%N %z") ] }]
@@ -109,11 +112,16 @@ Then /^timestamps should not change$/ do
   current_file_timestamps.should eq($context.file_timestamps)
 end
 
+Given(/^project file with:$/) do |content|
+  $playground.write_file "build.cell", content
+end
+
 Given /^project "(.*?)" with main source "(.*?)" and sources "(.*?)"$/ do |project_name, main_source_filename, source_filenames|
   $playground.write_file "build.cell", "project: #{project_name}"
-  $playground.write_file main_source_filename, "int main() { }\n"
-  source_filenames.split.each { |f| $playground.write_file f, "static void f() { }" }
+  step "main source \"#{main_source_filename}\""
+  step "sources \"#{source_filenames}\""
 end
+
 When /^I touch "(.*?)"$/ do |filename|
   $playground.touch filename
 end
@@ -130,10 +138,22 @@ Given /^main source "(.*?)"$/ do |filename|
   $playground.write_file filename, "int main() { }\n"
 end
 
+Given(/^sources "(.*?)"$/) do |filenames|
+  filenames.split.each { |f| $playground.write_file f, "static void f() { }" }
+end
+
 Then /^file "(.*?)" should exist$/ do |filename|
   $playground.file_exist?(filename).should be_true, "#{filename} does not exist"
 end
 
 Then /^file "(.*?)" should not exist$/ do |filename|
   $playground.file_exist?(filename).should be_false, "#{filename} exists"
+end
+
+Given(/^a fake compiler "(.*?)"$/) do |compiler_name|
+  $playground.write_file(compiler_name, "w") { |f| f.write "echo $#@ >> #{compiler_name}" }
+end
+
+Then(/^fakecc should run with "(.*?)"$/) do |args|
+  $playground.read_file("fakecc.log").split("\n").should include(args)
 end
