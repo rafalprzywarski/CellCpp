@@ -74,6 +74,12 @@ TEST_F(load_configuration_test, should_parse_compiler_name)
     EXPECT_EQ("dummy_compiler37", load_configuration().compiler_name);
 }
 
+TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
+{
+    content["build.cell"] = "project: 123";
+    EXPECT_EQ("g++", load_configuration().compiler_name); // TODO: a temporary hack
+}
+
 INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
     content_with_project_name{"project: abc123", "abc123"},
     content_with_project_name{"project :other", "other"},

@@ -75,7 +75,7 @@ configuration unpack_properties(const config::properties& properties)
     configuration configuration;
     configuration.project_name = mapped["project"];
     configuration.executable_name = get_value_or(mapped, "executable", configuration.project_name);
-    configuration.compiler_name = mapped["compiler"];
+    configuration.compiler_name = get_value_or(mapped, "compiler", "g++");
     return configuration;
 }
 
