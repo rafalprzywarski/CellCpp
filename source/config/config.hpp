@@ -12,6 +12,7 @@ struct configuration
 {
     std::string project_name;
     std::string executable_name;
+    std::string compiler_name;
 };
 
 struct configuration_error : std::runtime_error

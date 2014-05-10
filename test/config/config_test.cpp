@@ -68,6 +68,12 @@ TEST_F(parse_executable_name_test, should_use_project_name_if_no_exectable_name_
     EXPECT_EQ("123", load_configuration().executable_name);
 }
 
+TEST_F(load_configuration_test, should_parse_compiler_name)
+{
+    content["build.cell"] = "project: abc\ncompiler: dummy_compiler37";
+    EXPECT_EQ("dummy_compiler37", load_configuration().compiler_name);
+}
+
 INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
     content_with_project_name{"project: abc123", "abc123"},
     content_with_project_name{"project :other", "other"},
