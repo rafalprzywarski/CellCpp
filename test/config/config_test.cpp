@@ -71,7 +71,10 @@ TEST_F(parse_executable_name_test, should_use_project_name_if_no_exectable_name_
 TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
 {
     content["build.cell"] = "project: 123";
-    EXPECT_EQ("g++", load_configuration().compiler.executable); // TODO: a temporary hack
+    auto compiler = load_configuration().compiler;
+    EXPECT_EQ("g++", compiler.executable); // TODO: a temporary hack
+    EXPECT_EQ("-c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
+    EXPECT_EQ("$(OBJECTS) -o $(EXECUTABLE)", compiler.link_executable);
 }
 
 TEST_F(load_configuration_test, should_load_compiler_configuration)

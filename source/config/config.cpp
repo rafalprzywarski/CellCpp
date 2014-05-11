@@ -89,6 +89,8 @@ compiler_desc get_default_compiler_configuration()
 {
     compiler_desc compiler;
     compiler.executable = "g++";
+    compiler.compile_source = "-c $(SOURCE) -o $(OBJECT)";
+    compiler.link_executable = "$(OBJECTS) -o $(EXECUTABLE)";
     return compiler;
 }
 
