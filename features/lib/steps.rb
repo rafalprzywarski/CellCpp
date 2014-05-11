@@ -31,6 +31,10 @@ class Playground
   def write_file filename, content
     File.open(file_path(filename), "w") { |f| f.write content }
   end
+  def write_executable_file filename, content
+    write_file filename, content
+    File.chmod 0777, file_path(filename)
+  end
   def read_file filename
     File.read(file_path(filename))
   end
@@ -151,7 +155,7 @@ Then /^file "(.*?)" should not exist$/ do |filename|
 end
 
 Given(/^a fake compiler "(.*?)"$/) do |compiler_name|
-  $playground.write_file(compiler_name, "w") { |f| f.write "echo $#@ >> #{compiler_name}" }
+  $playground.write_executable_file compiler_name, "echo $@ >> #{compiler_name}.log\n"
 end
 
 Then(/^fakecc should run with "(.*?)"$/) do |args|
