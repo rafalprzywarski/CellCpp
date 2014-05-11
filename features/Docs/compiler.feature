@@ -11,10 +11,8 @@ Feature: As a developer I want specify the compiler to build my software
 		"""
 		compiler: FakeCC
 		executable: './fakecc'
-		commands {
-			compile-source: 'COMPILE $(SOURCE) OUTPUT $(OBJECT)'
-			link-executable: 'LINK $(OBJECTS) AS $(EXECUTABLE)'
-		}
+		compile-source: 'COMPILE $(SOURCE) OUTPUT $(OBJECT)'
+		link-executable: 'LINK $(OBJECTS) AS $(EXECUTABLE)'
 		"""
 		And main source "main.cpp"
 		And sources "file1.cpp file2.cpp"

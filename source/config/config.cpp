@@ -39,8 +39,9 @@ struct config_grammar : boost::spirit::qi::grammar<Iterator, config::properties(
     {
     }
 
-    qi::rule<Iterator, std::string(), ascii::space_type> identifier{qi::lexeme[+qi::char_("a-zA-Z0-9_")]};
-    qi::rule<Iterator, config::property(), ascii::space_type> property{identifier > ":" > identifier};
+    qi::rule<Iterator, std::string(), ascii::space_type> identifier{qi::lexeme[+qi::char_("a-zA-Z0-9_\\-")]};
+    qi::rule<Iterator, std::string(), ascii::space_type> string{qi::lexeme['\'' > *(qi::char_ - '\'') > '\'']};
+    qi::rule<Iterator, config::property(), ascii::space_type> property{identifier > ":" >> (identifier | string)};
     qi::rule<Iterator, config::properties(), ascii::space_type> grammar{*property};
 };
 
@@ -69,13 +70,35 @@ const typename Map::mapped_type& get_value_or(const Map& m, const typename Map::
     return it != m.end() ? it->second : v;
 }
 
-configuration unpack_properties(const config::properties& properties)
+compiler_desc unpack_compiler_properties(const config::properties& properties)
+{
+    auto mapped = map_properties(properties);
+    compiler_desc compiler;
+    compiler.executable = mapped["executable"];
+    compiler.compile_source = mapped["compile-source"];
+    compiler.link_executable = mapped["link-executable"];
+    return compiler;
+}
+
+compiler_desc load_compiler_configuration(const std::string& name, std::function<std::string(const path& )> load_file)
+{
+    return unpack_compiler_properties(parse_properties(load_file(name + ".cell")));
+}
+
+compiler_desc get_default_compiler_configuration()
+{
+    compiler_desc compiler;
+    compiler.executable = "g++";
+    return compiler;
+}
+
+configuration unpack_properties(const config::properties& properties, std::function<std::string(const path& )> load_file)
 {
     auto mapped = map_properties(properties);
     configuration configuration;
     configuration.project_name = mapped["project"];
     configuration.executable_name = get_value_or(mapped, "executable", configuration.project_name);
-    configuration.compiler_name = get_value_or(mapped, "compiler", "g++");
+    configuration.compiler = mapped.count("compiler") ? load_compiler_configuration(mapped["compiler"], load_file) : get_default_compiler_configuration();
     return configuration;
 }
 
@@ -83,7 +106,7 @@ configuration unpack_properties(const config::properties& properties)
 
 configuration load_configuration(std::function<std::string(const path& )> load_file)
 {
-    return unpack_properties(parse_properties(load_file("build.cell")));
+    return unpack_properties(parse_properties(load_file("build.cell")), load_file);
 }
 
 }

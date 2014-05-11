@@ -8,11 +8,18 @@
 namespace cell
 {
 
+struct compiler_desc
+{
+    std::string executable;
+    std::string compile_source;
+    std::string link_executable;
+};
+
 struct configuration
 {
     std::string project_name;
     std::string executable_name;
-    std::string compiler_name;
+    compiler_desc compiler;
 };
 
 struct configuration_error : std::runtime_error
