@@ -161,3 +161,9 @@ end
 Then(/^fakecc should run with "(.*?)"$/) do |args|
   $playground.read_file("fakecc.log").split("\n").should include(args)
 end
+
+Then /^fakecc should link files "(.*?)" by "(.*?)"$/ do |files, args|
+  args = Regexp.new args
+  cmds = $playground.read_file("fakecc.log").split("\n")
+  cmds.index { |cmd| m = args.match(cmd) and m[1].split.sort == files.split.sort }.should_not be_nil, "commands: #{cmds}"
+end

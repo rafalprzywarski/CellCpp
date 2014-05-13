@@ -4,6 +4,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <functional>
 
 namespace cell
@@ -78,7 +79,7 @@ Target create_executable_target(const paths& objs, const path& exe, std::vector<
     return target;
 }
 
-void build_targets(const configuration& configuration, const paths& cpps, fn<Target(const path& , const path& )> create_object_target, fn<void(const std::vector<path>& , const path& )> link)
+void build_targets(const std::string& executable_name, const paths& cpps, fn<Target(const path& , const path& )> create_object_target, fn<void(const std::vector<path>& , const path& )> link)
 {
     std::vector<path> ofiles;
     std::vector<Target> deps;
@@ -88,29 +89,41 @@ void build_targets(const configuration& configuration, const paths& cpps, fn<Tar
         ofiles.push_back(ofile);
         deps.push_back(create_object_target(cpp, ofile));
     }
-    auto tgt = create_executable_target(ofiles, configuration.executable_name, deps, link);
+    auto tgt = create_executable_target(ofiles, executable_name, deps, link);
     tgt.build();
 }
 
-void compile_cpp(const path& cpp, const path& ofile)
+void compile_cpp(const compiler_desc& compiler, const path& cpp, const path& ofile)
 {
-    auto compile_cmd = "g++ -c " + cpp.string() + " -o " + ofile.string();
+    auto args = compiler.compile_source;
+    boost::replace_all(args, "$(SOURCE)", cpp.string());
+    boost::replace_all(args, "$(OBJECT)", ofile.string());
+    auto compile_cmd = compiler.executable + " " + args;
     std::system(compile_cmd.c_str());
 }
 
-void link_target(const std::vector<path>& ofiles, const path& target)
+void link_target(const compiler_desc& compiler, const std::vector<path>& ofiles, const path& target)
 {
     using namespace boost::adaptors;
     fn<std::string(const path& e)> to_string = [](const path& p) { return p.string(); };
     auto flattened = boost::join(transform(ofiles, to_string), " ");
-    auto link_cmd = "g++ " + flattened + " -o " + target.string();
+    auto args = compiler.link_executable;
+    boost::replace_all(args, "$(OBJECTS)", flattened);
+    boost::replace_all(args, "$(EXECUTABLE)", target.string());
+    auto link_cmd = compiler.executable + " " + args;
     std::system(link_cmd.c_str());
 }
 
 void build_targets(const configuration& configuration, const paths& cpps)
 {
     using namespace std::placeholders;
-    build_targets(configuration, cpps, std::bind(create_object_target, _1, _2, compile_cpp), link_target);
+    using std::bind;
+    fn<void(const path& , const path& )> compile = bind(compile_cpp, configuration.compiler, _1, _2);
+    build_targets(
+        configuration.executable_name,
+        cpps,
+        bind(create_object_target, _1, _2, compile),
+        bind(link_target, configuration.compiler, _1, _2));
 }
 
 void run()
