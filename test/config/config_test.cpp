@@ -68,6 +68,25 @@ TEST_F(parse_executable_name_test, should_use_project_name_if_no_exectable_name_
     EXPECT_EQ("123", load_configuration().executable_name);
 }
 
+TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
+{
+    content["build.cell"] = "project: 123";
+    auto compiler = load_configuration().compiler;
+    EXPECT_EQ("g++", compiler.executable); // TODO: a temporary hack
+    EXPECT_EQ("-c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
+    EXPECT_EQ("$(OBJECTS) -o $(EXECUTABLE)", compiler.link_executable);
+}
+
+TEST_F(load_configuration_test, should_load_compiler_configuration)
+{
+    content["build.cell"] = "project: 123\ncompiler: pretty";
+    content["pretty.cell"] = "executable: \'./path/prettycc\'\ncompile-source: \'cc -c\'\nlink-executable: \'ll -l\'";
+    auto compiler = load_configuration().compiler;
+    EXPECT_EQ("./path/prettycc", compiler.executable);
+    EXPECT_EQ("cc -c", compiler.compile_source);
+    EXPECT_EQ("ll -l", compiler.link_executable);
+}
+
 INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
     content_with_project_name{"project: abc123", "abc123"},
     content_with_project_name{"project :other", "other"},
