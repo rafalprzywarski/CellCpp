@@ -2,8 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <map>
-#include <boost/spirit/home/qi.hpp>
-#include "property.hpp"
+#include "parse_properties.hpp"
 
 namespace cell
 {
@@ -28,39 +27,12 @@ configuration load_configuration()
 namespace
 {
 
-namespace qi = ::boost::spirit::qi;
-namespace ascii = ::boost::spirit::ascii;
-
-template <typename Iterator>
-struct config_grammar : boost::spirit::qi::grammar<Iterator, config::properties(), ascii::space_type>
-{
-    config_grammar()
-        : config_grammar::base_type(grammar, "config-grammar")
-    {
-    }
-
-    qi::rule<Iterator, std::string(), ascii::space_type> identifier{qi::lexeme[+qi::char_("a-zA-Z0-9_\\-")]};
-    qi::rule<Iterator, std::string(), ascii::space_type> string{qi::lexeme['\'' > *(qi::char_ - '\'') > '\'']};
-    qi::rule<Iterator, config::property(), ascii::space_type> property{identifier > ":" >> (identifier | string)};
-    qi::rule<Iterator, config::properties(), ascii::space_type> grammar{*property};
-};
-
 std::map<std::string, std::string> map_properties(const config::properties& properties)
 {
     decltype(map_properties(properties)) mapped;
     for (auto& p : properties)
         mapped[p.name] = p.value;
     return mapped;
-}
-
-config::properties parse_properties(const std::string& text)
-{
-    auto first = begin(text);
-    config_grammar<std::string::const_iterator> grammar;
-    config::properties properties;
-    boost::spirit::qi::phrase_parse(first, end(text), grammar, ascii::space, properties);
-
-    return properties;
 }
 
 template <typename Map>
@@ -82,7 +54,7 @@ compiler_desc unpack_compiler_properties(const config::properties& properties)
 
 compiler_desc load_compiler_configuration(const std::string& name, std::function<std::string(const path& )> load_file)
 {
-    return unpack_compiler_properties(parse_properties(load_file(name + ".cell")));
+    return unpack_compiler_properties(config::parse_properties(load_file(name + ".cell")));
 }
 
 compiler_desc get_default_compiler_configuration()
@@ -108,7 +80,7 @@ configuration unpack_properties(const config::properties& properties, std::funct
 
 configuration load_configuration(std::function<std::string(const path& )> load_file)
 {
-    return unpack_properties(parse_properties(load_file("build.cell")), load_file);
+    return unpack_properties(config::parse_properties(load_file("build.cell")), load_file);
 }
 
 }
