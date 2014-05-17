@@ -1,5 +1,6 @@
 #include <gmock/gmock.h>
 #include <config/config.hpp>
+#include <config/property.hpp>
 #include <boost/filesystem/path.hpp>
 #include <functional>
 
@@ -8,9 +9,9 @@ namespace cell
 
 struct load_configuration_test : testing::Test
 {
-    std::map<path, std::string> content;
+    std::map<path, config::properties> content;
 
-    std::string load_file(const path& filename)
+    config::properties load_file(const path& filename)
     {
         auto it = content.find(filename);
         if (it == content.end())
@@ -24,53 +25,29 @@ struct load_configuration_test : testing::Test
     }
 };
 
-struct content_with_project_name
+TEST_F(load_configuration_test, should_parse_project_name)
 {
-    std::string content, project_name;
-};
-
-std::ostream& operator<<(std::ostream& os, const content_with_project_name& p)
-{
-    return os << p.content;
-}
-
-struct parse_project_name_test : load_configuration_test, testing::WithParamInterface<content_with_project_name> { };
-
-TEST_P(parse_project_name_test, should_parse_project_name)
-{
-    content["build.cell"] = GetParam().content;
+    content["build.cell"] = { { "project", "some123" }};
     auto configuration = load_configuration();
-    EXPECT_EQ(GetParam().project_name, configuration.project_name);
+    EXPECT_EQ("some123", configuration.project_name);
 }
 
-struct content_with_executable_name
+TEST_F(load_configuration_test, should_parse_executable_name)
 {
-    std::string content, executable_name;
-};
-
-std::ostream& operator<<(std::ostream& os, const content_with_executable_name& p)
-{
-    return os << p.content;
-}
-
-struct parse_executable_name_test : load_configuration_test, testing::WithParamInterface<content_with_executable_name> { };
-
-TEST_P(parse_executable_name_test, should_parse_executable_name)
-{
-    content["build.cell"] = GetParam().content;
+    content["build.cell"] = { { "executable", "myexe" }};
     auto configuration = load_configuration();
-    EXPECT_EQ(GetParam().executable_name, configuration.executable_name);
+    EXPECT_EQ("myexe", configuration.executable_name);
 }
 
-TEST_F(parse_executable_name_test, should_use_project_name_if_no_exectable_name_is_specified)
+TEST_F(load_configuration_test, should_use_project_name_if_no_exectable_name_is_specified)
 {
-    content["build.cell"] = "project: 123";
+    content["build.cell"] = { { "project", "123" } };
     EXPECT_EQ("123", load_configuration().executable_name);
 }
 
 TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
 {
-    content["build.cell"] = "project: 123";
+    content["build.cell"] = { { "project", "123" } };
     auto compiler = load_configuration().compiler;
     EXPECT_EQ("g++", compiler.executable); // TODO: a temporary hack
     EXPECT_EQ("-c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
@@ -79,21 +56,13 @@ TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
 
 TEST_F(load_configuration_test, should_load_compiler_configuration)
 {
-    content["build.cell"] = "project: 123\ncompiler: pretty";
-    content["pretty.cell"] = "executable: \'./path/prettycc\'\ncompile-source: \'cc -c\'\nlink-executable: \'ll -l\'";
+    content["build.cell"] = { { "project", "123" }, { "compiler", "pretty" } };
+    content["pretty.cell"] = {
+        { "executable", "./path/prettycc" }, { "compile-source", "cc -c" }, { "link-executable", "ll -l" } };
     auto compiler = load_configuration().compiler;
     EXPECT_EQ("./path/prettycc", compiler.executable);
     EXPECT_EQ("cc -c", compiler.compile_source);
     EXPECT_EQ("ll -l", compiler.link_executable);
 }
-
-INSTANTIATE_TEST_CASE_P(all_cases, parse_project_name_test, testing::Values(
-    content_with_project_name{"project: abc123", "abc123"},
-    content_with_project_name{"project :other", "other"},
-    content_with_project_name{"project : another\n", "another"}));
-
-INSTANTIATE_TEST_CASE_P(all_cases, parse_executable_name_test, testing::Values(
-    content_with_executable_name{"project: X\nexecutable: xyz345", "xyz345"},
-    content_with_executable_name{"executable : other\nproject: X", "other"}));
 
 }

@@ -21,7 +21,7 @@ std::string load_text_file(const path& filename)
 
 configuration load_configuration()
 {
-    return load_configuration(load_text_file);
+    return load_configuration(std::bind(config::parse_properties, std::bind(load_text_file, std::placeholders::_1)));
 }
 
 namespace
@@ -52,9 +52,9 @@ compiler_desc unpack_compiler_properties(const config::properties& properties)
     return compiler;
 }
 
-compiler_desc load_compiler_configuration(const std::string& name, std::function<std::string(const path& )> load_file)
+compiler_desc load_compiler_configuration(const std::string& name, std::function<config::properties(const path& )> load_file)
 {
-    return unpack_compiler_properties(config::parse_properties(load_file(name + ".cell")));
+    return unpack_compiler_properties(load_file(name + ".cell"));
 }
 
 compiler_desc get_default_compiler_configuration()
@@ -66,7 +66,7 @@ compiler_desc get_default_compiler_configuration()
     return compiler;
 }
 
-configuration unpack_properties(const config::properties& properties, std::function<std::string(const path& )> load_file)
+configuration unpack_properties(const config::properties& properties, std::function<config::properties(const path& )> load_file)
 {
     auto mapped = map_properties(properties);
     configuration configuration;
@@ -78,9 +78,9 @@ configuration unpack_properties(const config::properties& properties, std::funct
 
 }
 
-configuration load_configuration(std::function<std::string(const path& )> load_file)
+configuration load_configuration(std::function<config::properties(const path& )> load_file)
 {
-    return unpack_properties(config::parse_properties(load_file("build.cell")), load_file);
+    return unpack_properties(load_file("build.cell"), load_file);
 }
 
 }
