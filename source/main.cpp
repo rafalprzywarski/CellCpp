@@ -13,11 +13,6 @@ namespace cell
 template <typename F>
 using fn = std::function<F>;
 
-path replace_extension(path p, const path& new_ext)
-{
-    return std::move(p.replace_extension(new_ext));
-}
-
 struct Target
 {
     void add_dependency(Target dep)
@@ -85,7 +80,7 @@ void build_targets(const std::string& executable_name, const paths& cpps, fn<Tar
     std::vector<Target> deps;
     for (auto cpp : cpps)
     {
-        auto ofile = replace_extension(cpp, ".o");
+        auto ofile = cpp.string() + ".o";
         ofiles.push_back(ofile);
         deps.push_back(create_object_target(cpp, ofile));
     }

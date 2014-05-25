@@ -17,7 +17,7 @@ Feature: As a developer I want specify the compiler to build my software
 		And main source "main.cpp"
 		And sources "file1.cpp file2.cpp"
 		When I run cell
-		Then fakecc should run with "COMPILE main.cpp OUTPUT main.o"
-		And fakecc should run with "COMPILE file1.cpp OUTPUT file1.o"
-		And fakecc should run with "COMPILE file2.cpp OUTPUT file2.o"
-		And fakecc should link files "main.o file1.o file2.o" by "LINK (.*) AS demo"
+		Then fakecc should run with "COMPILE main.cpp OUTPUT main.cpp.o"
+		And fakecc should run with "COMPILE file1.cpp OUTPUT file1.cpp.o"
+		And fakecc should run with "COMPILE file2.cpp OUTPUT file2.cpp.o"
+		And fakecc should link files "main.cpp.o file1.cpp.o file2.cpp.o" by "LINK (.*) AS demo"
