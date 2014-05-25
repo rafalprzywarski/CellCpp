@@ -1,10 +1,8 @@
 #include "config/config.hpp"
 #include "find_cpp_files.hpp"
+#include "ConfiguredCompiler.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/range/algorithm/find_if.hpp>
-#include <boost/range/adaptors.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/replace.hpp>
 #include <functional>
 
 namespace cell
@@ -88,44 +86,24 @@ void build_targets(const std::string& executable_name, const paths& cpps, fn<Tar
     tgt.build();
 }
 
-void compile_cpp(const compiler_desc& compiler, const path& cpp, const path& ofile)
-{
-    auto args = compiler.compile_source;
-    boost::replace_all(args, "$(SOURCE)", cpp.string());
-    boost::replace_all(args, "$(OBJECT)", ofile.string());
-    auto compile_cmd = compiler.executable + " " + args;
-    std::system(compile_cmd.c_str());
-}
-
-void link_target(const compiler_desc& compiler, const std::vector<path>& ofiles, const path& target)
-{
-    using namespace boost::adaptors;
-    fn<std::string(const path& e)> to_string = [](const path& p) { return p.string(); };
-    auto flattened = boost::join(transform(ofiles, to_string), " ");
-    auto args = compiler.link_executable;
-    boost::replace_all(args, "$(OBJECTS)", flattened);
-    boost::replace_all(args, "$(EXECUTABLE)", target.string());
-    auto link_cmd = compiler.executable + " " + args;
-    std::system(link_cmd.c_str());
-}
-
-void build_targets(const configuration& configuration, const paths& cpps)
+void build_targets(Compiler& compiler, const std::string& executable_name, const paths& cpps)
 {
     using namespace std::placeholders;
     using std::bind;
-    fn<void(const path& , const path& )> compile = bind(compile_cpp, configuration.compiler, _1, _2);
+    fn<void(const path& , const path& )> compile = bind(&Compiler::compile, &compiler, _1, _2);
     build_targets(
-        configuration.executable_name,
+        executable_name,
         cpps,
         bind(create_object_target, _1, _2, compile),
-        bind(link_target, configuration.compiler, _1, _2));
+        bind(&Compiler::link, &compiler, _1, _2));
 }
 
 void run()
 {
     auto configuration = load_configuration();
     auto cpps = find_cpp_files();
-    build_targets(configuration, cpps);
+    ConfiguredCompiler compiler(configuration.compiler);
+    build_targets(compiler, configuration.executable_name, cpps);
 }
 
 }
