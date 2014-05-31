@@ -13,5 +13,7 @@ public:
     virtual void link(const paths& ofiles, const path& executable) = 0;
 };
 
+typedef std::shared_ptr<Compiler> CompilerPtr;
+
 }
 #endif // CELL_ED9135CE49D14C849709DFE2D2D7D2FB_HPP

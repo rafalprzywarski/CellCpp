@@ -56,54 +56,70 @@ private:
     }
 };
 
-Target create_object_target(const path& cpp, const path& obj, fn<void(const path& , const path& )> compile)
+class TargetFactory
 {
-    Target target{obj};
-    target.set_build_command([=](){ compile(cpp, obj); });
-    target.add_dependency(cpp);
-    return target;
-}
+public:
+    TargetFactory(CompilerPtr compiler) : compiler(compiler) { }
 
-Target create_executable_target(const paths& objs, const path& exe, std::vector<Target> deps, fn<void(const paths& , const path& )> link)
-{
-    Target target{exe};
-    target.set_build_command([=](){ link(objs, exe); });
-    target.set_dependencies(std::move(deps));
-    return target;
-}
-
-void build_targets(const std::string& executable_name, const paths& cpps, fn<Target(const path& , const path& )> create_object_target, fn<void(const std::vector<path>& , const path& )> link)
-{
-    std::vector<path> ofiles;
-    std::vector<Target> deps;
-    for (auto cpp : cpps)
+    Target createObjectTarget(const path& cpp, const path& obj)
     {
-        auto ofile = cpp.string() + ".o";
-        ofiles.push_back(ofile);
-        deps.push_back(create_object_target(cpp, ofile));
+        Target target{obj};
+        target.set_build_command([=](){ compiler->compile(cpp, obj); });
+        target.add_dependency(cpp);
+        return target;
     }
-    auto tgt = create_executable_target(ofiles, executable_name, deps, link);
-    tgt.build();
-}
 
-void build_targets(Compiler& compiler, const std::string& executable_name, const paths& cpps)
+    Target createExecutableTarget(const paths& objs, const path& exe, std::vector<Target> deps)
+    {
+        Target target{exe};
+        target.set_build_command([=](){ compiler->link(objs, exe); });
+        target.set_dependencies(std::move(deps));
+        return target;
+    }
+private:
+    CompilerPtr compiler;
+};
+
+class ConfigurationProvider
 {
-    using namespace std::placeholders;
-    using std::bind;
-    fn<void(const path& , const path& )> compile = bind(&Compiler::compile, &compiler, _1, _2);
-    build_targets(
-        executable_name,
-        cpps,
-        bind(create_object_target, _1, _2, compile),
-        bind(&Compiler::link, &compiler, _1, _2));
-}
+public:
+    ConfigurationProvider() : config(load_configuration()) { }
+    std::string getExecutableName() const { return config.executable_name; }
+    paths getCppFiles() const { return find_cpp_files(); }
+    CompilerPtr getCompiler() const { return std::make_shared<ConfiguredCompiler>(config.compiler); }
+private:
+    configuration config;
+};
+
+class CellRunner
+{
+public:
+    CellRunner(ConfigurationProvider& configProvider, TargetFactory& targetFactory)
+        : configProvider(configProvider), targetFactory(targetFactory) { }
+    void buildProject()
+    {
+        std::vector<path> ofiles;
+        std::vector<Target> deps;
+        for (auto cpp : configProvider.getCppFiles())
+        {
+            auto ofile = cpp.string() + ".o";
+            ofiles.push_back(ofile);
+            deps.push_back(targetFactory.createObjectTarget(cpp, ofile));
+        }
+        auto tgt = targetFactory.createExecutableTarget(ofiles, configProvider.getExecutableName(), deps);
+        tgt.build();
+    }
+private:
+    ConfigurationProvider& configProvider;
+    TargetFactory& targetFactory;
+};
 
 void run()
 {
-    auto configuration = load_configuration();
-    auto cpps = find_cpp_files();
-    ConfiguredCompiler compiler(configuration.compiler);
-    build_targets(compiler, configuration.executable_name, cpps);
+    ConfigurationProvider configProvider;
+    TargetFactory targetFactory{configProvider.getCompiler()};
+    CellRunner runner{configProvider, targetFactory};
+    runner.buildProject();
 }
 
 }
