@@ -131,6 +131,7 @@ When /^I touch "(.*?)"$/ do |filename|
 end
 
 Then /^only files "(.*?)" should change$/ do |filenames|
+  filenames = filenames.split
   current_file_timestamps = $playground.collect_timestamps
   $context.file_timestamps.keys.each do |f|
     current_file_timestamps[f].should_not eq($context.file_timestamps[f]), "#{f} did not change" if filenames.include? f

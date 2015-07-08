@@ -39,7 +39,7 @@ Feature: As a developer I want the build system to build my programs
         """
         When I run cell
         Then it should not fail
-        And object files "test1.o test2.o test_main.o" should exist
+        And object files "test1.cpp.o test2.cpp.o test_main.cpp.o" should exist
         And compiled program "demo" should print:
         """
         test1
@@ -62,7 +62,7 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file2.cpp"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file2.o main.o test37" should change
+        Then only files "file2.cpp.o main.cpp.o test37" should change
 
     @done
     Scenario: Should use executable name if one is preset in the configuration
