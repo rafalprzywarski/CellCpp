@@ -74,7 +74,7 @@ When /^I run cell$/ do
 end
 
 Then /^it should fail with "(.*?)"$/ do |message|
-  $context.cell_status.success?.should be_false
+  $context.cell_status.success?.should be_falsey
   $context.cell_stderr.should include message
 end
 
@@ -83,7 +83,7 @@ Given /^file "(.*?)" with:$/ do |filename, content|
 end
 
 Then /^it should not fail$/ do
-  $context.cell_status.success?.should be_true, "it failed with status: #{$context.cell_status}, stdout:\n#{$context.cell_stdout}\nstderr:\n#{$context.cell_stderr}"
+  $context.cell_status.success?.should be_truthy, "it failed with status: #{$context.cell_status}, stdout:\n#{$context.cell_stdout}\nstderr:\n#{$context.cell_stderr}"
   $context.cell_stderr.should be_empty, $context.cell_stderr
 end
 
@@ -94,7 +94,7 @@ end
 
 Then /^object files "(.*?)" should exist$/ do |objectFilenames|
   objectFilenames.split.each do |objectFilename|
-      $playground.file_exist?(objectFilename).should be_true, "#{objectFilename} does not exist"
+      $playground.file_exist?(objectFilename).should be_truthy, "#{objectFilename} does not exist"
   end
 end
 
@@ -147,11 +147,11 @@ Given(/^sources "(.*?)"$/) do |filenames|
 end
 
 Then /^file "(.*?)" should exist$/ do |filename|
-  $playground.file_exist?(filename).should be_true, "#{filename} does not exist"
+  $playground.file_exist?(filename).should be_truthy, "#{filename} does not exist"
 end
 
 Then /^file "(.*?)" should not exist$/ do |filename|
-  $playground.file_exist?(filename).should be_false, "#{filename} exists"
+  $playground.file_exist?(filename).should be_falsey, "#{filename} exists"
 end
 
 Given(/^a fake compiler "(.*?)"$/) do |compiler_name|
