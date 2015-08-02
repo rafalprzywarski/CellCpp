@@ -3,6 +3,8 @@ script: rake
 compiler:
   - clang
   - gcc
+gcc:
+  - 4.8.5
 
 before_install:
   - sudo add-apt-repository ppa:boost-latest/ppa -y
