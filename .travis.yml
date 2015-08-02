@@ -1,11 +1,10 @@
 language: cpp
 sudo: false
-script: rake
 
 matrix:
   include:
     - os: linux
-      env: CC=clang CXX=clang++
+      env: CMAKE_COMPILER=clang++
       addons:
         apt:
           packages:
@@ -15,7 +14,7 @@ matrix:
           sources:
             - boost-latest
     - os: linux
-      env: CC=gcc-4.8 CXX=gcc++-4.8
+      env: CMAKE_COMPILER=gcc++-4.8
       addons:
         apt:
           packages:
@@ -28,3 +27,5 @@ matrix:
             - boost-latest
 
 install: gem install cucumber rspec
+
+script: CXX=${CMAKE_COMPILER} rake
