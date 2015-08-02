@@ -1,5 +1,5 @@
 CellCpp
 =======
-[![Build Status](https://travis-ci.org/rafalprzywarski/travis-ci-status.svg?branch=master)](https://travis-ci.org/rafalprzywarski/travis-ci-status)
+[![Build Status](https://travis-ci.org/rafalprzywarski/CellCpp.svg?branch=master)](https://travis-ci.org/rafalprzywarski/CellCpp)
 
 A C++ build system.
