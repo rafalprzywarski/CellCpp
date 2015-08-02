@@ -5,7 +5,7 @@ script: rake
 matrix:
   include:
     - os: linux
-      env: CMAKE_COMPILER=clang++
+      env: CC=clang CXX=clang++
       addons:
         apt:
           packages:
@@ -15,7 +15,7 @@ matrix:
           sources:
             - boost-latest
     - os: linux
-      env: CMAKE_COMPILER=gcc++-4.8
+      env: CC=gcc-4.8 CXX=gcc++-4.8
       addons:
         apt:
           packages:
