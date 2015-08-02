@@ -1,15 +1,30 @@
 language: cpp
+sudo: false
 script: rake
-compiler:
-  - clang
-  - gcc
 
-before_install:
-  - sudo add-apt-repository ppa:boost-latest/ppa -y
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo apt-get update -qq
-  - sudo apt-get -qq install g++-4.8
-  - sudo apt-get install -y libboost1.55-dev libboost-system1.55-dev libboost-filesystem1.55-dev || apt-cache search libboost
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; export CXX="g++-4.8" CC="gcc-4.8"; fi
+matrix:
+  include:
+    - os: linux
+      env: CMAKE_COMPILER=clang++
+      addons:
+        apt:
+          packages:
+            - libboost1.55-dev
+            - libboost-system1.55-dev
+            - libboost-filesystem1.55-dev
+          sources:
+            - ppa:boost-latest/ppa
+    - os: linux
+      env: CMAKE_COMPILER=gcc++-4.8
+      addons:
+        apt:
+          packages:
+            - g++-4.8
+            - libboost1.55-dev
+            - libboost-system1.55-dev
+            - libboost-filesystem1.55-dev
+          sources:
+            - ubuntu-toolchain-r-test
+            - ppa:boost-latest/ppa
 
 install: gem install cucumber rspec
