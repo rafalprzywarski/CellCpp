@@ -1,10 +1,10 @@
 language: c++
+sudo: false
 
 matrix:
   fast_finish: true
   include:
     - os: linux
-      sudo: false
       env: CMAKE_COMPILER=clang++
       addons:
         apt:
@@ -15,7 +15,6 @@ matrix:
           sources:
             - boost-latest
     - os: linux
-      sudo: false
       env: CMAKE_COMPILER=g++-4.8
       addons:
         apt:
@@ -28,7 +27,6 @@ matrix:
             - ubuntu-toolchain-r-test
             - boost-latest
     - os: osx
-      sudo: required
       env: CMAKE_COMPILER=clang++
 
 install: gem install cucumber rspec
