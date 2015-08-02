@@ -5,7 +5,7 @@ compiler:
   - gcc
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libboost-dev libboost-system-dev libboost-filesystem-dev
+  - apt-get update -qq
+  - apt-get install -y libboost-dev libboost-system-dev libboost-filesystem-dev
 
 sudo: false
