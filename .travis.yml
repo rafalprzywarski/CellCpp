@@ -13,7 +13,7 @@ matrix:
             - libboost-system1.55-dev
             - libboost-filesystem1.55-dev
           sources:
-            - boost-latest/ppa
+            - boost-latest-ppa
     - os: linux
       env: CMAKE_COMPILER=gcc++-4.8
       addons:
@@ -25,6 +25,6 @@ matrix:
             - libboost-filesystem1.55-dev
           sources:
             - ubuntu-toolchain-r-test
-            - boost-latest/ppa
+            - boost-latest-ppa
 
 install: gem install cucumber rspec
