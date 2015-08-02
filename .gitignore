@@ -1,6 +1,7 @@
 .*
 *~
 !.gitignore
+!.travis.yml
 /build
 /test_installation
 
