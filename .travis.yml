@@ -9,4 +9,4 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y libboost1.55-dev libboost-system1.55-dev libboost-filesystem1.55-dev || apt-cache search libboost
 
-install: gem install rails
+install: gem install cucumber
