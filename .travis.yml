@@ -7,4 +7,4 @@ compiler:
 before_install:
   - sudo add-apt-repository ppa:boost-latest/ppa -y
   - sudo apt-get update -qq
-  - sudo apt-get install -y libboost1.55-dev libboost1.55-system-dev libboost1.55-filesystem-dev || apt-cache search libboost
+  - sudo apt-get install -y libboost1.55-dev libboost-system1.55-dev libboost-filesystem1.55-dev || apt-cache search libboost
