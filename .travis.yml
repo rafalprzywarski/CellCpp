@@ -1,9 +1,9 @@
 language: cpp
-sudo: false
 
 matrix:
   include:
     - os: linux
+      sudo: false
       env: CMAKE_COMPILER=clang++
       addons:
         apt:
@@ -14,6 +14,7 @@ matrix:
           sources:
             - boost-latest
     - os: linux
+      sudo: false
       env: CMAKE_COMPILER=g++-4.8
       addons:
         apt:
