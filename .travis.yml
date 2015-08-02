@@ -30,9 +30,6 @@ matrix:
     - os: osx
       sudo: required
       env: CMAKE_COMPILER=clang++
-      before_install:
-        - brew update
-        - brew install boost
 
 install: gem install cucumber rspec
 
