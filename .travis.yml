@@ -27,6 +27,7 @@ matrix:
             - ubuntu-toolchain-r-test
             - boost-latest
     - os: osx
+      sudo: required
       env: CMAKE_COMPILER=clang++
       before_install:
         - brew update
