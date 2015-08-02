@@ -1,6 +1,7 @@
-language: cpp
+language: c++
 
 matrix:
+  fast_finish: true
   include:
     - os: linux
       sudo: false
