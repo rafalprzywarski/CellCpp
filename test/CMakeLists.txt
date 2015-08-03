@@ -1,3 +1,5 @@
+add_definitions("-Wall")
+
 include_directories(${GoogleMock_INCLUDE_DIRS})
 include_directories("../source")
 
