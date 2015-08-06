@@ -75,3 +75,20 @@ Feature: As a developer I want the build system to build my programs
         When I run cell
         Then file "proj_exe" should exist
         And file "some" should not exist
+    @wip
+    Scenario: Do recompile source files if their included header files change
+      Given project "test37" with main source "main.cpp" and sources "file1.cpp file2.cpp file3.cpp"
+      And file "file4.h" with:
+      """
+      void f4();
+      """
+      And file "file4.cpp" with:
+      """
+      #include "file4.h"
+      void f4() { }
+      """
+      When I run cell
+      And I touch "file4.h"
+      And I keep timestamps of all files
+      And I run cell
+      Then only files "file4.cpp.o test37" should change
