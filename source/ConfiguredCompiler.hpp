@@ -12,8 +12,10 @@ public:
     ConfiguredCompiler(const compiler_desc& desc) : desc(desc) { }
     void compile(const path& cpp, const path& ofile);
     void link(const std::vector<path>& ofiles, const path& target);
+    paths get_required_headers(const path& cppfile) override;
 private:
     compiler_desc desc;
+    std::string get_command_output(const std::string& cmd);
 };
 
 }

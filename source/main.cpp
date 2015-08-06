@@ -19,6 +19,11 @@ struct Target
         dependencies.push_back(std::move(dep));
     }
 
+    void add_dependencies(const paths& deps)
+    {
+        dependencies.insert(dependencies.end(), std::begin(deps), std::end(deps));
+    }
+
     void set_dependencies(std::vector<Target> deps)
     {
         dependencies = std::move(deps);
@@ -67,6 +72,7 @@ public:
         Target target{obj};
         target.set_build_command([=](){ compiler->compile(cpp, obj); });
         target.add_dependency(cpp);
+        target.add_dependencies(compiler->get_required_headers(cpp));
         return target;
     }
 
