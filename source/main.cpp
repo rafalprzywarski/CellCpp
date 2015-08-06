@@ -14,21 +14,6 @@ using fn = std::function<F>;
 
 struct Target
 {
-    void add_dependency(Target dep)
-    {
-        dependencies.push_back(std::move(dep));
-    }
-
-    void add_dependencies(const paths& deps)
-    {
-        dependencies.insert(dependencies.end(), std::begin(deps), std::end(deps));
-    }
-
-    void set_dependencies(std::vector<Target> deps)
-    {
-        dependencies = std::move(deps);
-    }
-
     void build()
     {
         for (auto& dep : dependencies)
@@ -37,12 +22,9 @@ struct Target
             build_command();
     }
 
-    void set_build_command(fn<void()> cmd)
-    {
-        build_command = std::move(cmd);
-    }
-
     Target(path file) : file(std::move(file)) { }
+
+    Target(path file, std::vector<Target> dependencies, fn<void()> build_command) : file(std::move(file)), dependencies(std::move(dependencies)), build_command(build_command) { }
 private:
     path file;
     std::vector<Target> dependencies;
@@ -69,19 +51,15 @@ public:
 
     Target createObjectTarget(const path& cpp, const path& obj)
     {
-        Target target{obj};
-        target.set_build_command([=](){ compiler->compile(cpp, obj); });
-        target.add_dependency(cpp);
-        target.add_dependencies(compiler->get_required_headers(cpp));
-        return target;
+        auto headers = compiler->get_required_headers(cpp);
+        std::vector<Target> deps{headers.begin(), headers.end()};
+        deps.push_back(cpp);
+        return {obj, std::move(deps), [=](){ compiler->compile(cpp, obj); }};
     }
 
     Target createExecutableTarget(const paths& objs, const path& exe, std::vector<Target> deps)
     {
-        Target target{exe};
-        target.set_build_command([=](){ compiler->link(objs, exe); });
-        target.set_dependencies(std::move(deps));
-        return target;
+        return {exe, std::move(deps), [=](){ compiler->link(objs, exe); }};
     }
 private:
     CompilerPtr compiler;
