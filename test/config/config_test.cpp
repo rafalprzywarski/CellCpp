@@ -52,6 +52,7 @@ TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
     EXPECT_EQ("g++", compiler.executable); // TODO: a temporary hack
     EXPECT_EQ("-c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
     EXPECT_EQ("$(OBJECTS) -o $(EXECUTABLE)", compiler.link_executable);
+    EXPECT_EQ("-MM $(SOURCE)", compiler.get_used_headers);
 }
 
 TEST_F(load_configuration_test, should_load_compiler_configuration)

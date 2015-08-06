@@ -14,6 +14,7 @@ struct compiler_desc
     std::string executable;
     std::string compile_source;
     std::string link_executable;
+    std::string get_used_headers;
 };
 
 struct configuration
