@@ -49,6 +49,7 @@ compiler_desc unpack_compiler_properties(const config::properties& properties)
     compiler.executable = mapped["executable"];
     compiler.compile_source = mapped["compile-source"];
     compiler.link_executable = mapped["link-executable"];
+    compiler.get_used_headers = mapped["get-used-headers"];
     return compiler;
 }
 

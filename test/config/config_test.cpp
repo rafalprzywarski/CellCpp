@@ -59,11 +59,12 @@ TEST_F(load_configuration_test, should_load_compiler_configuration)
 {
     content["build.cell"] = { { "project", "123" }, { "compiler", "pretty" } };
     content["pretty.cell"] = {
-        { "executable", "./path/prettycc" }, { "compile-source", "cc -c" }, { "link-executable", "ll -l" } };
+        { "executable", "./path/prettycc" }, { "compile-source", "cc -c" }, { "link-executable", "ll -l" }, { "get-used-headers", "hh -h" } };
     auto compiler = load_configuration().compiler;
     EXPECT_EQ("./path/prettycc", compiler.executable);
     EXPECT_EQ("cc -c", compiler.compile_source);
     EXPECT_EQ("ll -l", compiler.link_executable);
+    EXPECT_EQ("hh -h", compiler.get_used_headers);
 }
 
 }

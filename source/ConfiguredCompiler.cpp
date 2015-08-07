@@ -41,8 +41,6 @@ void ConfiguredCompiler::link(const std::vector< path >& ofiles, const path& tar
 
 paths ConfiguredCompiler::get_required_headers(const path& cppfile)
 {
-    if (desc.get_used_headers.empty())
-        return {};
     config::properties props = {{ "SOURCE", cppfile.string() }};
     std::string text = executor->getCommandOutput(make_command(desc.executable, desc.get_used_headers, props));
     std::vector<std::string> files;

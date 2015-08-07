@@ -156,7 +156,7 @@ Then /^file "(.*?)" should not exist$/ do |filename|
 end
 
 Given(/^a fake compiler "(.*?)"$/) do |compiler_name|
-  $playground.write_executable_file compiler_name, "echo $@ >> #{compiler_name}.log\n"
+  $playground.write_executable_file compiler_name, "echo $@ >> #{compiler_name}.log\nif [ \"$1\" == \"HEADERS\" ]; then echo \"$2.o: $2\"; fi"
 end
 
 Then(/^fakecc should run with "(.*?)"$/) do |args|
