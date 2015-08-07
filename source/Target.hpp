@@ -1,6 +1,8 @@
 #ifndef CELL_DAC370A2C54A402F99E7114DAF1A4522_HPP
 #define CELL_DAC370A2C54A402F99E7114DAF1A4522_HPP
-
+#include <boost/optional.hpp>
+#include <iterator>
+#include <fstream>
 #include "fn.hpp"
 
 namespace cell
@@ -14,6 +16,22 @@ struct Target
             dep.build();
         if (is_out_of_date())
             build_command();
+    }
+
+    static boost::optional<Target> load(path cpp, path obj, fn<void()> build_command)
+    {
+        std::ifstream f(cpp.string() + ".d");
+        if (!f.is_open())
+          return {};
+        std::vector<Target> dependencies{std::istream_iterator<path>(f), std::istream_iterator<path>()};
+        return Target{obj, dependencies, build_command};
+    }
+
+    void store(path cpp)
+    {
+        std::ofstream f(cpp.string() + ".d");
+        for (auto& dep : dependencies)
+          f << dep.file << '\n';
     }
 
     Target(path file) : file(std::move(file)) { }

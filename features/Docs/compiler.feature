@@ -26,7 +26,7 @@ Feature: As a developer I want specify the compiler to build my software
 		And fakecc should run with "COMPILE file2.cpp OUTPUT file2.cpp.o"
 		And fakecc should link files "main.cpp.o file1.cpp.o file2.cpp.o" by "LINK demo FROM (.*)"
 
-	@wip
+	@done
 	Scenario: Should store a header list for each .cpp and not rebuild it of the .cpp does not change
 		Given project file with:
 		"""
