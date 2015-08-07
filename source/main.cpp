@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 #include "TargetFactory.hpp"
+#include "NativeCommandExecutor.hpp"
 
 namespace cell
 {
@@ -16,7 +17,7 @@ public:
     ConfigurationProvider() : config(load_configuration()) { }
     std::string getExecutableName() const { return config.executable_name; }
     paths getCppFiles() const { return find_cpp_files(); }
-    CompilerPtr getCompiler() const { return std::make_shared<ConfiguredCompiler>(config.compiler); }
+    CompilerPtr getCompiler() const { return std::make_shared<ConfiguredCompiler>(std::make_shared<NativeCommandExecutor>(), config.compiler); }
 private:
     configuration config;
 };
