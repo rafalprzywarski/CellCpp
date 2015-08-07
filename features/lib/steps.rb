@@ -13,6 +13,7 @@ end
 class Playground
   def initialize directory
     @directory = directory
+    FileUtils.rm_rf @directory if File.exist? @directory
     Dir.mkdir @directory
   end
   def destroy
@@ -156,7 +157,22 @@ Then /^file "(.*?)" should not exist$/ do |filename|
 end
 
 Given(/^a fake compiler "(.*?)"$/) do |compiler_name|
-  $playground.write_executable_file compiler_name, "echo $@ >> #{compiler_name}.log\nif [ \"$1\" == \"HEADERS\" ]; then echo \"$2.o: $2\"; fi"
+  $playground.write_executable_file compiler_name, %{
+    echo $@ >> #{compiler_name}.log
+    case $1 in
+      "HEADERS") echo "$2.o: $2";;
+      "COMPILE") echo "$2" > "$4";;
+      "LINK")
+        EXE="$2"
+        shift; shift; shift
+        echo "$@" > "${EXE}"
+        ;;
+    esac
+  }
+end
+
+When(/^I clear fakecc log$/) do
+  $playground.write_file "fakecc.log", ""
 end
 
 Then(/^fakecc should run with "(.*?)"$/) do |args|
@@ -167,4 +183,8 @@ Then /^fakecc should link files "(.*?)" by "(.*?)"$/ do |files, args|
   args = Regexp.new args
   cmds = $playground.read_file("fakecc.log").split("\n")
   cmds.index { |cmd| m = args.match(cmd) and m[1].split.sort == files.split.sort }.should_not be_nil, "commands: #{cmds}"
+end
+
+Then(/^fakecc should not run$/) do
+  expect($playground.read_file("fakecc.log")).to be_empty
 end
