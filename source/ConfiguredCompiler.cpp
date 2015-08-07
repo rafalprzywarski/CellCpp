@@ -39,15 +39,6 @@ void ConfiguredCompiler::link(const std::vector< path >& ofiles, const path& tar
     executor->executeCommand(make_command(desc.executable, desc.link_executable, props));
 }
 
-std::string ConfiguredCompiler::get_command_output(const std::string& cmd)
-{
-  auto file = popen(cmd.c_str(), "r");
-  char buffer[1024];
-  std::fgets(buffer, sizeof(buffer), file);
-  pclose(file);
-  return buffer;
-}
-
 paths ConfiguredCompiler::get_required_headers(const path& cppfile)
 {
     if (desc.get_used_headers.empty())

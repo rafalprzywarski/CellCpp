@@ -17,7 +17,6 @@ public:
 private:
     CommandExecutorPtr executor;
     compiler_desc desc;
-    std::string get_command_output(const std::string& cmd);
 };
 
 }
