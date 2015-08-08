@@ -127,6 +127,11 @@ Given /^project "(.*?)" with main source "(.*?)" and sources "(.*?)"$/ do |proje
   step "sources \"#{source_filenames}\""
 end
 
+Given(/^project "([^"]*)" with main source "([^"]*)"$/) do |project_name, main_source_filename|
+  $playground.write_file "build.cell", "project: #{project_name}"
+  step "main source \"#{main_source_filename}\""
+end
+
 When /^I touch "(.*?)"$/ do |filename|
   $playground.touch filename
 end
