@@ -1,5 +1,6 @@
 #include "NativeCommandExecutor.hpp"
 #include <cstdlib>
+#include <cstring>
 
 namespace cell
 {
