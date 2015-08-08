@@ -15,7 +15,7 @@ std::string NativeCommandExecutor::getCommandOutput(const std::string& command)
     char buffer[1024];
     std::fgets(buffer, sizeof(buffer), pipe);
     pclose(pipe);
-    return buffer;
+    return {buffer, std::strlen(buffer) - 1};
 }
 
 }

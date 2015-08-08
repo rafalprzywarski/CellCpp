@@ -12,16 +12,17 @@ public:
     Target createObjectTarget(const path& cpp, const path& obj)
     {
         auto build_command = [=](){ compiler->compile(cpp, obj); };
-        if (auto target = Target::load(cpp, obj, build_command))
+        Target d{cpp.string() + ".d", {cpp}, [=]
         {
-            return *target;
-        }
-        auto headers = compiler->get_required_headers(cpp);
-        std::vector<Target> deps{headers.begin(), headers.end()};
-        deps.push_back(cpp);
-        Target target{obj, std::move(deps), build_command};
-        target.store(cpp);
-        return target;
+            auto headers = compiler->get_required_headers(cpp);
+            std::vector<Target> deps{headers.begin(), headers.end()};
+            deps.push_back(cpp);
+            Target target{obj, std::move(deps), build_command};
+            target.store(cpp);
+        }};
+        d.build();
+
+        return *Target::load(cpp, obj, build_command);
     }
 
     Target createExecutableTarget(const paths& objs, const path& exe, std::vector<Target> deps)

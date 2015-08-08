@@ -62,7 +62,7 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file2.cpp"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file2.cpp.o main.cpp.o test37" should change
+        Then only files "file2.cpp.d main.cpp.d file2.cpp.o main.cpp.o test37" should change
 
     @done
     Scenario: Should use executable name if one is preset in the configuration
@@ -94,7 +94,7 @@ Feature: As a developer I want the build system to build my programs
       And I run cell
       Then only files "file4.cpp.o test37" should change
 
-    @wip
+    @done
     Scenario: Should rebuild a header list if its .cpp changes
         Given project "test22" with main source "main.cpp"
         And file "file4.h" with:
