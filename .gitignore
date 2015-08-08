@@ -4,6 +4,7 @@
 !.travis.yml
 /build
 /test_installation
+/test_playground*
 
 # Compiled Object files
 *.slo
