@@ -12,9 +12,8 @@ end
 
 class Playground
   def initialize directory
-    @directory = directory
-    FileUtils.rm_rf @directory if File.exist? @directory
-    Dir.mkdir @directory
+    @directory = "#{directory}/#{DateTime.now.strftime("%Y_%m_%d_%H_%M_%S_%N")}_#{Process.pid}"
+    FileUtils.mkdir_p @directory
   end
   def destroy
     FileUtils.rm_rf @directory
