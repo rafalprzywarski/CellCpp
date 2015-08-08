@@ -18,22 +18,6 @@ struct Target
             build_command();
     }
 
-    static boost::optional<Target> load(path cpp, path obj, fn<void()> build_command)
-    {
-        std::ifstream f(cpp.string() + ".d");
-        if (!f.is_open())
-          return {};
-        std::vector<Target> dependencies{std::istream_iterator<path>(f), std::istream_iterator<path>()};
-        return Target{obj, dependencies, build_command};
-    }
-
-    void store(path cpp)
-    {
-        std::ofstream f(cpp.string() + ".d");
-        for (auto& dep : dependencies)
-          f << dep.file << '\n';
-    }
-
     Target(path file) : file(std::move(file)) { }
 
     Target(path file, std::vector<Target> dependencies, fn<void()> build_command) : file(std::move(file)), dependencies(std::move(dependencies)), build_command(build_command) { }
