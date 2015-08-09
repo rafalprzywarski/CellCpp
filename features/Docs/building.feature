@@ -116,3 +116,31 @@ Feature: As a developer I want the build system to build my programs
         And I keep timestamps of all files
         And I run cell
         Then only files "file4.cpp.o test22" should change
+
+    @wip
+    Scenario: Should rebuild a header list if on of the headers change
+        Given project "test22" with main source "main.cpp"
+        And file "file4.h" with:
+        """
+        void f4();
+        """
+        And file "file5.h" with:
+        """
+        void f5();
+        """
+        Given file "file4.cpp" with:
+        """
+        #include "file4.h"
+        void f4() { }
+        """
+        When I run cell
+        Given file "file4.h" with:
+        """
+        #include "file5.h"
+        void f4();
+        """
+        When I run cell
+        And I touch "file5.h"
+        And I keep timestamps of all files
+        And I run cell
+        Then only files "file4.cpp.o test22" should change
