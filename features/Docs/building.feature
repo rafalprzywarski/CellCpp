@@ -92,7 +92,7 @@ Feature: As a developer I want the build system to build my programs
       And I touch "file4.h"
       And I keep timestamps of all files
       And I run cell
-      Then only files "file4.cpp.o test37" should change
+      Then only files "file4.cpp.o file4.cpp.d test37" should change
 
     @done
     Scenario: Should rebuild a header list if its .cpp changes
@@ -115,9 +115,9 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file4.h"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file4.cpp.o test22" should change
+        Then only files "file4.cpp.o file4.cpp.d test22" should change
 
-    @wip
+    @done
     Scenario: Should rebuild a header list if on of the headers change
         Given project "test22" with main source "main.cpp"
         And file "file4.h" with:
@@ -143,4 +143,4 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file5.h"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file4.cpp.o test22" should change
+        Then only files "file4.cpp.o file4.cpp.d test22" should change

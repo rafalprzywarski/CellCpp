@@ -11,17 +11,15 @@ public:
 
     Target createObjectTarget(const path& cpp, const path& obj)
     {
-        Target d{dependencyListName(cpp), {cpp}, [=]
+        auto build_command = [=]()
         {
             auto headers = compiler->get_required_headers(cpp);
             paths deps{headers.begin(), headers.end()};
             deps.push_back(cpp);
             storeObjectDependencies(cpp, deps);
-        }};
-        d.build();
-
-        auto build_command = [=](){ compiler->compile(cpp, obj); };
-        return *loadObjectTarget(cpp, obj, build_command);
+            compiler->compile(cpp, obj);
+        };
+        return Target{obj, loadDependencies(cpp), build_command};
     }
 
     Target createExecutableTarget(const paths& objs, const path& exe, std::vector<Target> deps)
@@ -38,13 +36,12 @@ private:
           f << dep << '\n';
     }
 
-    static boost::optional<Target> loadObjectTarget(path cpp, path obj, fn<void()> build_command)
+    static std::vector<Target> loadDependencies(path cpp)
     {
         std::ifstream f(dependencyListName(cpp));
         if (!f.is_open())
-          return {};
-        std::vector<Target> dependencies{std::istream_iterator<path>(f), std::istream_iterator<path>()};
-        return Target{obj, dependencies, build_command};
+          return {cpp};
+        return {std::istream_iterator<path>(f), std::istream_iterator<path>()};
     }
 
     static std::string dependencyListName(const path& cpp)
