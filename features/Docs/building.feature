@@ -39,7 +39,7 @@ Feature: As a developer I want the build system to build my programs
         """
         When I run cell
         Then it should not fail
-        And object files "build/test1.cpp.o build/test2.cpp.o build/test_main.cpp.o" should exist
+        And files "build/test1.cpp.o build/test2.cpp.o build/test_main.cpp.o" should exist
         And compiled program "build/demo" should print:
         """
         test1
@@ -144,3 +144,14 @@ Feature: As a developer I want the build system to build my programs
         And I keep timestamps of all files
         And I run cell
         Then only files "build/file4.cpp.o build/file4.cpp.d build/test22" should change
+
+    @done
+    Scenario: Should put all generated files in the specified output path
+        Given project:
+        """
+        project: some
+        output-path: 'out/debug'
+        """
+        And main source "some.cpp"
+        When I run cell
+        Then files "out/debug/some.cpp.d out/debug/some.cpp.o out/debug/some" should exist

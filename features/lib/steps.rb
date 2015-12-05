@@ -92,12 +92,6 @@ Then /^compiled program "(.*?)" should print:$/ do |program, content|
   program_stdout.should eq(content)
 end
 
-Then /^object files "(.*?)" should exist$/ do |objectFilenames|
-  objectFilenames.split.each do |objectFilename|
-      $playground.file_exist?(objectFilename).should be_truthy, "#{objectFilename} does not exist"
-  end
-end
-
 Given /^project:$/ do |content|
   $playground.write_file "build.cell", content
 end
@@ -154,6 +148,12 @@ end
 
 Then /^file "(.*?)" should exist$/ do |filename|
   $playground.file_exist?(filename).should be_truthy, "#{filename} does not exist"
+end
+
+Then /^files "(.*?)" should exist$/ do |filenames|
+  filenames.split.each do |filename|
+      $playground.file_exist?(filename).should be_truthy, "#{filename} does not exist"
+  end
 end
 
 Then /^file "(.*?)" should not exist$/ do |filename|

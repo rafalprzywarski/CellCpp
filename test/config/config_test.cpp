@@ -67,4 +67,16 @@ TEST_F(load_configuration_test, should_load_compiler_configuration)
     EXPECT_EQ("hh -h", compiler.get_used_headers);
 }
 
+TEST_F(load_configuration_test, should_return_default_output_path)
+{
+    content["build.cell"] = { { "project", "123" } };
+    EXPECT_EQ("build", load_configuration().output_path);
+}
+
+TEST_F(load_configuration_test, should_load_default_output_path)
+{
+    content["build.cell"] = { { "project", "123" }, { "output-path", "different/path" } };
+    EXPECT_EQ("different/path", load_configuration().output_path);
+}
+
 }
