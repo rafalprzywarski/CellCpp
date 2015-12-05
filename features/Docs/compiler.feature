@@ -10,10 +10,9 @@ Feature: As a developer I want specify the compiler to build my software
 		And file "fakecc.cell" with:
 		"""
 		compiler: FakeCC
-		executable: './fakecc'
-		compile-source: 'COMPILE $(SOURCE) OUTPUT $(OBJECT)'
-		link-executable: 'LINK $(EXECUTABLE) FROM $(OBJECTS)'
-		get-used-headers: 'HEADERS $(SOURCE)'
+		compile-source: './fakecc COMPILE $(SOURCE) OUTPUT $(OBJECT)'
+		link-executable: './fakecc LINK $(EXECUTABLE) FROM $(OBJECTS)'
+		get-used-headers: './fakecc HEADERS $(SOURCE)'
 		"""
 		And main source "main.cpp"
 		And sources "file1.cpp file2.cpp"
@@ -37,10 +36,9 @@ Feature: As a developer I want specify the compiler to build my software
 		And file "fakecc.cell" with:
 		"""
 		compiler: FakeCC
-		executable: './fakecc'
-		compile-source: 'COMPILE $(SOURCE) OUTPUT $(OBJECT)'
-		link-executable: 'LINK $(EXECUTABLE) FROM $(OBJECTS)'
-		get-used-headers: 'HEADERS $(SOURCE)'
+		compile-source: './fakecc COMPILE $(SOURCE) OUTPUT $(OBJECT)'
+		link-executable: './fakecc LINK $(EXECUTABLE) FROM $(OBJECTS)'
+		get-used-headers: './fakecc HEADERS $(SOURCE)'
 		"""
 		And main source "main.cpp"
 		And sources "file1.cpp file2.cpp"

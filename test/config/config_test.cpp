@@ -49,22 +49,21 @@ TEST_F(load_configuration_test, should_return_gcc_as_the_default_compiler)
 {
     content["build.cell"] = { { "project", "123" } };
     auto compiler = load_configuration().compiler;
-    EXPECT_EQ("g++", compiler.executable); // TODO: a temporary hack
-    EXPECT_EQ("-c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
-    EXPECT_EQ("$(OBJECTS) -o $(EXECUTABLE)", compiler.link_executable);
-    EXPECT_EQ("-MM $(SOURCE)", compiler.get_used_headers);
+    // TODO: a temporary hack
+    EXPECT_EQ("g++ -c $(SOURCE) -o $(OBJECT)", compiler.compile_source);
+    EXPECT_EQ("g++ $(OBJECTS) -o $(EXECUTABLE)", compiler.link_executable);
+    EXPECT_EQ("g++ -MM $(SOURCE)", compiler.get_used_headers);
 }
 
 TEST_F(load_configuration_test, should_load_compiler_configuration)
 {
     content["build.cell"] = { { "project", "123" }, { "compiler", "pretty" } };
     content["pretty.cell"] = {
-        { "executable", "./path/prettycc" }, { "compile-source", "cc -c" }, { "link-executable", "ll -l" }, { "get-used-headers", "hh -h" } };
+        { "compile-source", "./path/prettycc cc -c" }, { "link-executable", "./path/prettycc ll -l" }, { "get-used-headers", "./path/prettycc hh -h" } };
     auto compiler = load_configuration().compiler;
-    EXPECT_EQ("./path/prettycc", compiler.executable);
-    EXPECT_EQ("cc -c", compiler.compile_source);
-    EXPECT_EQ("ll -l", compiler.link_executable);
-    EXPECT_EQ("hh -h", compiler.get_used_headers);
+    EXPECT_EQ("./path/prettycc cc -c", compiler.compile_source);
+    EXPECT_EQ("./path/prettycc ll -l", compiler.link_executable);
+    EXPECT_EQ("./path/prettycc hh -h", compiler.get_used_headers);
 }
 
 TEST_F(load_configuration_test, should_return_default_output_path)

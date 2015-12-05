@@ -46,7 +46,6 @@ compiler_desc unpack_compiler_properties(const config::properties& properties)
 {
     auto mapped = map_properties(properties);
     compiler_desc compiler;
-    compiler.executable = mapped["executable"];
     compiler.compile_source = mapped["compile-source"];
     compiler.link_executable = mapped["link-executable"];
     compiler.get_used_headers = mapped["get-used-headers"];
@@ -61,10 +60,9 @@ compiler_desc load_compiler_configuration(const std::string& name, std::function
 compiler_desc get_default_compiler_configuration()
 {
     compiler_desc compiler;
-    compiler.executable = "g++";
-    compiler.compile_source = "-c $(SOURCE) -o $(OBJECT)";
-    compiler.link_executable = "$(OBJECTS) -o $(EXECUTABLE)";
-    compiler.get_used_headers = "-MM $(SOURCE)";
+    compiler.compile_source = "g++ -c $(SOURCE) -o $(OBJECT)";
+    compiler.link_executable = "g++ $(OBJECTS) -o $(EXECUTABLE)";
+    compiler.get_used_headers = "g++ -MM $(SOURCE)";
     return compiler;
 }
 
