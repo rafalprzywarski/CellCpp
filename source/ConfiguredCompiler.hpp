@@ -11,8 +11,8 @@ class ConfiguredCompiler : public Compiler
 {
 public:
     ConfiguredCompiler(CommandExecutorPtr executor, const compiler_desc& desc) : executor(executor), desc(desc) { }
-    void compile(const path& cpp, const path& ofile);
-    void link(const std::vector<path>& ofiles, const path& target);
+    void compile(const path& cpp, const path& ofile) override;
+    void link(const std::vector<path>& ofiles, const path& target) override;
     paths get_required_headers(const path& cppfile) override;
 private:
     CommandExecutorPtr executor;
