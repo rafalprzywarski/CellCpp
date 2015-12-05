@@ -21,6 +21,7 @@ struct configuration
 {
     std::string project_name;
     std::string executable_name;
+    std::string output_path;
     compiler_desc compiler;
 };
 

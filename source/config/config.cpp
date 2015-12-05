@@ -74,6 +74,7 @@ configuration unpack_properties(const config::properties& properties, std::funct
     configuration configuration;
     configuration.project_name = mapped["project"];
     configuration.executable_name = get_value_or(mapped, "executable", configuration.project_name);
+    configuration.output_path = "build";
     configuration.compiler = mapped.count("compiler") ? load_compiler_configuration(mapped["compiler"], load_file) : get_default_compiler_configuration();
     return configuration;
 }

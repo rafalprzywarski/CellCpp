@@ -40,7 +40,7 @@ class Playground
   end
   def collect_timestamps
     Dir.chdir(@directory) do
-        Hash[Dir["*"].collect { |f| [ f, File.mtime(f).strftime("%Y-%m-%d %H:%M:%S.%N %z") ] }]
+        Hash[Dir["**/*"].select { |f| File.file?(f) }.collect { |f| [ f, File.mtime(f).strftime("%Y-%m-%d %H:%M:%S.%N %z") ] }]
     end
   end
   def file_exist? filename

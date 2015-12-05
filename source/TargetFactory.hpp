@@ -7,7 +7,7 @@ namespace cell
 class TargetFactory
 {
 public:
-    TargetFactory(CompilerPtr compiler) : compiler(compiler) { }
+    TargetFactory(CompilerPtr compiler, fn<path(const path& )> getDependencyListPath) : compiler(compiler), getDependencyListPath(getDependencyListPath) { }
 
     Target createObjectTarget(const path& cpp, const path& obj)
     {
@@ -28,25 +28,21 @@ public:
     }
 private:
     CompilerPtr compiler;
+    fn<path(const path& )> getDependencyListPath;
 
     void storeObjectDependencies(path cpp, const paths& deps)
     {
-        std::ofstream f(dependencyListName(cpp));
+        std::ofstream f(getDependencyListPath(cpp).string());
         for (auto& dep : deps)
           f << dep << '\n';
     }
 
-    static std::vector<Target> loadDependencies(path cpp)
+    std::vector<Target> loadDependencies(path cpp)
     {
-        std::ifstream f(dependencyListName(cpp));
+        std::ifstream f(getDependencyListPath(cpp).string());
         if (!f.is_open())
           return {cpp};
         return {std::istream_iterator<path>(f), std::istream_iterator<path>()};
-    }
-
-    static std::string dependencyListName(const path& cpp)
-    {
-        return cpp.string() + ".d";
     }
 };
 

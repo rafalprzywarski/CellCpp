@@ -15,9 +15,12 @@ class ConfigurationProvider
 {
 public:
     ConfigurationProvider() : config(load_configuration()) { }
-    std::string getExecutableName() const { return config.executable_name; }
+    path getExecutablePath() const { return getOutputPath() / path(config.executable_name); }
     paths getCppFiles() const { return find_cpp_files(); }
     CompilerPtr getCompiler() const { return std::make_shared<ConfiguredCompiler>(std::make_shared<NativeCommandExecutor>(), config.compiler); }
+    path getObjectFilePath(const path& cpp) const { return (getOutputPath() / cpp).string() + ".o"; }
+    path getOutputPath() const { return config.output_path; }
+    path getDependencyListPath(const path& cpp) const { return (getOutputPath() / cpp).string() + ".d"; }
 private:
     configuration config;
 };
@@ -33,11 +36,12 @@ public:
         std::vector<Target> deps;
         for (auto cpp : configProvider.getCppFiles())
         {
-            auto ofile = cpp.string() + ".o";
+            auto ofile = configProvider.getObjectFilePath(cpp.string());
             ofiles.push_back(ofile);
             deps.push_back(targetFactory.createObjectTarget(cpp, ofile));
         }
-        auto tgt = targetFactory.createExecutableTarget(ofiles, configProvider.getExecutableName(), deps);
+        auto tgt = targetFactory.createExecutableTarget(ofiles, configProvider.getExecutablePath(), deps);
+        create_directories(configProvider.getOutputPath());
         tgt.build();
     }
 private:
@@ -48,7 +52,7 @@ private:
 void run()
 {
     ConfigurationProvider configProvider;
-    TargetFactory targetFactory{configProvider.getCompiler()};
+    TargetFactory targetFactory{configProvider.getCompiler(), [&](const path& cpp) { return configProvider.getDependencyListPath(cpp); }};
     CellRunner runner{configProvider, targetFactory};
     runner.buildProject();
 }

@@ -39,8 +39,8 @@ Feature: As a developer I want the build system to build my programs
         """
         When I run cell
         Then it should not fail
-        And object files "test1.cpp.o test2.cpp.o test_main.cpp.o" should exist
-        And compiled program "demo" should print:
+        And object files "build/test1.cpp.o build/test2.cpp.o build/test_main.cpp.o" should exist
+        And compiled program "build/demo" should print:
         """
         test1
         test2
@@ -62,7 +62,7 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file2.cpp"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file2.cpp.d main.cpp.d file2.cpp.o main.cpp.o test37" should change
+        Then only files "build/file2.cpp.d build/main.cpp.d build/file2.cpp.o build/main.cpp.o build/test37" should change
 
     @done
     Scenario: Should use executable name if one is preset in the configuration
@@ -73,8 +73,8 @@ Feature: As a developer I want the build system to build my programs
         """
         And main source "some.cpp"
         When I run cell
-        Then file "proj_exe" should exist
-        And file "some" should not exist
+        Then file "build/proj_exe" should exist
+        And file "build/some" should not exist
 
     @done
     Scenario: Do recompile source files if their included header files change
@@ -92,7 +92,7 @@ Feature: As a developer I want the build system to build my programs
       And I touch "file4.h"
       And I keep timestamps of all files
       And I run cell
-      Then only files "file4.cpp.o file4.cpp.d test37" should change
+      Then only files "build/file4.cpp.o build/file4.cpp.d build/test37" should change
 
     @done
     Scenario: Should rebuild a header list if its .cpp changes
@@ -115,7 +115,7 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file4.h"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file4.cpp.o file4.cpp.d test22" should change
+        Then only files "build/file4.cpp.o build/file4.cpp.d build/test22" should change
 
     @done
     Scenario: Should rebuild a header list if on of the headers change
@@ -143,4 +143,4 @@ Feature: As a developer I want the build system to build my programs
         And I touch "file5.h"
         And I keep timestamps of all files
         And I run cell
-        Then only files "file4.cpp.o file4.cpp.d test22" should change
+        Then only files "build/file4.cpp.o build/file4.cpp.d build/test22" should change
