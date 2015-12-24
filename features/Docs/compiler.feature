@@ -26,7 +26,7 @@ Feature: As a developer I want specify the compiler to build my software
 		And fakecc should link files "build/main.cpp.o build/file1.cpp.o build/file2.cpp.o" by "LINK build/demo FROM (.*)"
 
 	@done
-	Scenario: Should store a header list for each .cpp and not rebuild it of the .cpp does not change
+	Scenario: Should store a header list for each .cpp and not rebuild it if the .cpp does not change
 		Given project file with:
 		"""
 		project: demo
