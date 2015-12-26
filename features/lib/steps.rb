@@ -29,7 +29,9 @@ class Playground
     end
   end
   def write_file filename, content
-    File.open(file_path(filename), "w") { |f| f.write content }
+    path = file_path(filename)
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write path, content
   end
   def write_executable_file filename, content
     write_file filename, content
