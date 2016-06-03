@@ -68,12 +68,13 @@ compiler_desc get_default_compiler_configuration()
 
 configuration unpack_properties(const config::properties& properties, std::function<config::properties(const path& )> load_file)
 {
-    auto mapped = map_properties(properties);
+    const auto mapped = map_properties(properties);
     configuration configuration;
-    configuration.project_name = mapped["project"];
+    configuration.project_name = mapped.at("project");
     configuration.executable_name = get_value_or(mapped, "executable", configuration.project_name);
+    configuration.packages = get_value_or(mapped, "packages", "");
     configuration.output_path = get_value_or(mapped, "output-path", "build");
-    configuration.compiler = mapped.count("compiler") ? load_compiler_configuration(mapped["compiler"], load_file) : get_default_compiler_configuration();
+    configuration.compiler = mapped.count("compiler") ? load_compiler_configuration(mapped.at("compiler"), load_file) : get_default_compiler_configuration();
     return configuration;
 }
 

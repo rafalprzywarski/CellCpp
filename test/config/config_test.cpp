@@ -34,9 +34,23 @@ TEST_F(load_configuration_test, should_parse_project_name)
 
 TEST_F(load_configuration_test, should_parse_executable_name)
 {
-    content["build.cell"] = { { "executable", "myexe" }};
+    content["build.cell"] = { { "project", "123" }, { "executable", "myexe" }};
     auto configuration = load_configuration();
     EXPECT_EQ("myexe", configuration.executable_name);
+}
+
+TEST_F(load_configuration_test, should_parse_packages)
+{
+    content["build.cell"] = { { "project", "123" }, { "packages", "mypackage" }};
+    auto configuration = load_configuration();
+    EXPECT_EQ("mypackage", configuration.packages);
+}
+
+TEST_F(load_configuration_test, packages_should_be_empty_by_default)
+{
+    content["build.cell"] = { { "project", "123" } };
+    auto configuration = load_configuration();
+    EXPECT_EQ("", configuration.packages);
 }
 
 TEST_F(load_configuration_test, should_use_project_name_if_no_exectable_name_is_specified)
