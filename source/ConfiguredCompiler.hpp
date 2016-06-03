@@ -3,6 +3,7 @@
 #include "Compiler.hpp"
 #include "config/config.hpp"
 #include "CommandExecutor.hpp"
+#include "p.hpp"
 
 namespace cell
 {
@@ -10,12 +11,12 @@ namespace cell
 class ConfiguredCompiler : public Compiler
 {
 public:
-    ConfiguredCompiler(CommandExecutorPtr executor, const compiler_desc& desc) : executor(executor), desc(desc) { }
+    ConfiguredCompiler(p<CommandExecutor> executor, const compiler_desc& desc) : executor(executor), desc(desc) { }
     void compile(const path& cpp, const path& ofile) override;
     void link(const std::vector<path>& ofiles, const path& target) override;
     paths get_required_headers(const path& cppfile) override;
 private:
-    CommandExecutorPtr executor;
+    p<CommandExecutor> executor;
     compiler_desc desc;
 };
 

@@ -1,13 +1,14 @@
 #ifndef CELL_DA4017C7361D4C838A674207B25FBA1E_HPP
 #define CELL_DA4017C7361D4C838A674207B25FBA1E_HPP
 #include "Target.hpp"
+#include "p.hpp"
 
 namespace cell
 {
 class TargetFactory
 {
 public:
-    TargetFactory(CompilerPtr compiler, fn<path(const path& )> getDependencyListPath) : compiler(compiler), getDependencyListPath(getDependencyListPath) { }
+    TargetFactory(p<Compiler> compiler, fn<path(const path& )> getDependencyListPath) : compiler(compiler), getDependencyListPath(getDependencyListPath) { }
 
     Target createObjectTarget(const path& cpp, const path& obj)
     {
@@ -27,7 +28,7 @@ public:
         return {exe, std::move(deps), [=](){ compiler->link(objs, exe); }};
     }
 private:
-    CompilerPtr compiler;
+    p<Compiler> compiler;
     fn<path(const path& )> getDependencyListPath;
 
     void storeObjectDependencies(path cpp, const paths& deps)

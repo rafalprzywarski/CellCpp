@@ -14,7 +14,5 @@ public:
     virtual paths get_required_headers(const path& cppfile) = 0; // TODO: move to a separate interface
 };
 
-typedef std::shared_ptr<Compiler> CompilerPtr;
-
 }
 #endif // CELL_ED9135CE49D14C849709DFE2D2D7D2FB_HPP

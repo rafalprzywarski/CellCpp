@@ -17,7 +17,7 @@ public:
     ConfigurationProvider() : config(load_configuration()) { }
     path getExecutablePath() const { return getOutputPath() / path(config.executable_name); }
     paths getCppFiles() const { return find_cpp_files(); }
-    CompilerPtr getCompiler() const { return std::make_shared<ConfiguredCompiler>(std::make_shared<NativeCommandExecutor>(), config.compiler); }
+    p<Compiler> getCompiler() const { return std::make_shared<ConfiguredCompiler>(std::make_shared<NativeCommandExecutor>(), config.compiler); }
     path getObjectFilePath(const path& cpp) const { return (getOutputPath() / cpp).string() + ".o"; }
     path getOutputPath() const { return config.output_path; }
     path getDependencyListPath(const path& cpp) const { return (getOutputPath() / cpp).string() + ".d"; }

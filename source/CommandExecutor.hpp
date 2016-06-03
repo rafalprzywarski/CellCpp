@@ -14,8 +14,6 @@ public:
     virtual std::string getCommandOutput(const std::string& command) = 0;
 };
 
-typedef std::shared_ptr<CommandExecutor> CommandExecutorPtr;
-
 }
 
 #endif
